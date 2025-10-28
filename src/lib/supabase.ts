@@ -11,6 +11,7 @@ export type Category = {
   slug: string;
   order: number;
   created_at: string;
+  subcategories?: Subcategory[];
 };
 
 export type Subcategory = {

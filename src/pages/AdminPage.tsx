@@ -50,7 +50,17 @@ export default function AdminPage() {
     try {
       const [usersRes, categoriesRes] = await Promise.all([
         supabase.rpc('get_users_with_subscriptions'),
-        supabase.from('categories').select('*').order('order'),
+        supabase.from('categories').select(`
+          *,
+          subcategories (
+            id,
+            name,
+            slug,
+            order,
+            category_id,
+            created_at
+          )
+        `).order('order'),
       ]);
 
       if (usersRes.error) {
@@ -59,7 +69,11 @@ export default function AdminPage() {
       }
 
       if (categoriesRes.data) {
-        setCategories(categoriesRes.data);
+        const categoriesWithSortedSubs = categoriesRes.data.map(cat => ({
+          ...cat,
+          subcategories: cat.subcategories?.sort((a: any, b: any) => a.order - b.order) || []
+        }));
+        setCategories(categoriesWithSortedSubs);
       }
 
       const formattedUsers: UserWithSubscription[] = usersRes.data.map((user: any) => ({
