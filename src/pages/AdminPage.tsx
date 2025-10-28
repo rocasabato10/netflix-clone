@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import type { Category } from '../lib/supabase';
 import { Users, TrendingUp, Upload, ArrowLeft } from 'lucide-react';
 import VideoUpload from '../components/VideoUpload';
+import CategoryManager from '../components/CategoryManager';
 
 interface UserWithSubscription {
   id: string;
@@ -26,6 +28,7 @@ interface SubscriptionStats {
 export default function AdminPage() {
   const navigate = useNavigate();
   const [users, setUsers] = useState<UserWithSubscription[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [stats, setStats] = useState<SubscriptionStats>({
     totalUsers: 0,
     premiumUsers: 0,
@@ -41,14 +44,21 @@ export default function AdminPage() {
 
   const loadData = async () => {
     try {
-      const { data: usersData, error: usersError } = await supabase.rpc('get_users_with_subscriptions');
+      const [usersRes, categoriesRes] = await Promise.all([
+        supabase.rpc('get_users_with_subscriptions'),
+        supabase.from('categories').select('*').order('order'),
+      ]);
 
-      if (usersError) {
-        console.error('Error loading users:', usersError);
+      if (usersRes.error) {
+        console.error('Error loading users:', usersRes.error);
         return;
       }
 
-      const formattedUsers: UserWithSubscription[] = usersData.map((user: any) => ({
+      if (categoriesRes.data) {
+        setCategories(categoriesRes.data);
+      }
+
+      const formattedUsers: UserWithSubscription[] = usersRes.data.map((user: any) => ({
         id: user.user_id,
         email: user.email,
         created_at: user.created_at,
@@ -220,6 +230,10 @@ export default function AdminPage() {
                 </tbody>
               </table>
             </div>
+          </div>
+
+          <div className="mt-8">
+            <CategoryManager categories={categories} onUpdate={loadData} />
           </div>
         </div>
       </div>
