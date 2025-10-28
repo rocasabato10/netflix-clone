@@ -34,3 +34,29 @@ export type Video = {
   featured: boolean;
   created_at: string;
 };
+
+export type SubscriptionPlan = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  stripe_price_id: string | null;
+  has_ads: boolean;
+  features: string[];
+  active: boolean;
+  created_at: string;
+};
+
+export type UserSubscription = {
+  id: string;
+  user_id: string;
+  plan_id: string;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  status: string;
+  current_period_start: string | null;
+  current_period_end: string | null;
+  cancel_at_period_end: boolean;
+  created_at: string;
+  updated_at: string;
+};

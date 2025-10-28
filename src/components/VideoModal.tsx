@@ -1,5 +1,7 @@
 import { X, Play } from 'lucide-react';
 import type { Video } from '../lib/supabase';
+import { useSubscription } from '../hooks/useSubscription';
+import AdBanner from './AdBanner';
 
 interface VideoModalProps {
   video: Video | null;
@@ -7,6 +9,8 @@ interface VideoModalProps {
 }
 
 export default function VideoModal({ video, onClose }: VideoModalProps) {
+  const { hasAds } = useSubscription();
+
   if (!video) return null;
 
   return (
@@ -33,6 +37,8 @@ export default function VideoModal({ video, onClose }: VideoModalProps) {
         </div>
 
         <div className="p-8 space-y-4">
+          {hasAds && <AdBanner />}
+
           <div className="flex items-center gap-4">
             <h2 className="text-3xl font-bold text-white">{video.title}</h2>
             {video.year && (
