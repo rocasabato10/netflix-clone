@@ -1,13 +1,14 @@
-import { Sparkles, LogOut } from 'lucide-react';
+import { Sparkles, LogOut, LogIn } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface HeaderProps {
   onCategoryChange: (categorySlug: string | null) => void;
   categories: Array<{ slug: string; name: string }>;
   activeCategory: string | null;
+  onAuthClick?: () => void;
 }
 
-export default function Header({ onCategoryChange, categories, activeCategory }: HeaderProps) {
+export default function Header({ onCategoryChange, categories, activeCategory, onAuthClick }: HeaderProps) {
   const { user, signOut } = useAuth();
 
   const handleSignOut = async () => {
@@ -55,18 +56,28 @@ export default function Header({ onCategoryChange, categories, activeCategory }:
           </nav>
         </div>
 
-        {user && (
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-300 hidden md:block">{user.email}</span>
+        <div className="flex items-center gap-4">
+          {user ? (
+            <>
+              <span className="text-sm text-gray-300 hidden md:block">{user.email}</span>
+              <button
+                onClick={handleSignOut}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded hover:bg-rose-700 transition"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </button>
+            </>
+          ) : (
             <button
-              onClick={handleSignOut}
+              onClick={onAuthClick}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded hover:bg-rose-700 transition"
             >
-              <LogOut className="w-4 h-4" />
-              Sign Out
+              <LogIn className="w-4 h-4" />
+              Sign In
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </header>
   );

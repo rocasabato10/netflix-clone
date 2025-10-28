@@ -7,6 +7,7 @@ import Hero from '../components/Hero';
 import VideoRow from '../components/VideoRow';
 import VideoModal from '../components/VideoModal';
 import AdBanner from '../components/AdBanner';
+import AuthModal from '../components/AuthModal';
 
 export default function HomePage() {
   const { hasAds } = useSubscription();
@@ -16,6 +17,7 @@ export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -69,6 +71,7 @@ export default function HomePage() {
         onCategoryChange={setActiveCategory}
         categories={categories}
         activeCategory={activeCategory}
+        onAuthClick={() => setShowAuthModal(true)}
       />
 
       <Hero videos={heroVideos} onPlayClick={setSelectedVideo} />
@@ -95,7 +98,15 @@ export default function HomePage() {
       </div>
 
       {selectedVideo && (
-        <VideoModal video={selectedVideo} onClose={() => setSelectedVideo(null)} />
+        <VideoModal
+          video={selectedVideo}
+          onClose={() => setSelectedVideo(null)}
+          onAuthRequired={() => setShowAuthModal(true)}
+        />
+      )}
+
+      {showAuthModal && (
+        <AuthModal onClose={() => setShowAuthModal(false)} />
       )}
     </div>
   );
