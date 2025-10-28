@@ -11,11 +11,11 @@ interface VideoRowProps {
 export default function VideoRow({ title, videos, onVideoClick }: VideoRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(true);
+  const [showRightArrow, setShowRightArrow] = useState(videos.length > 4);
 
   const scroll = (direction: 'left' | 'right') => {
     if (rowRef.current) {
-      const scrollAmount = direction === 'left' ? -800 : 800;
+      const scrollAmount = direction === 'left' ? -900 : 900;
       rowRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
 
       setTimeout(() => {
@@ -31,8 +31,8 @@ export default function VideoRow({ title, videos, onVideoClick }: VideoRowProps)
   if (videos.length === 0) return null;
 
   return (
-    <div className="px-8 md:px-16 py-6 group">
-      <h2 className="text-2xl font-semibold text-white mb-4">{title}</h2>
+    <div className="px-8 md:px-16 py-8 group">
+      <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 tracking-tight">{title}</h2>
 
       <div className="relative">
         {showLeftArrow && (
@@ -46,29 +46,40 @@ export default function VideoRow({ title, videos, onVideoClick }: VideoRowProps)
 
         <div
           ref={rowRef}
-          className="flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth"
+          className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {videos.map((video) => (
             <button
               key={video.id}
               onClick={() => onVideoClick(video)}
-              className="flex-none w-64 group/item transition-transform hover:scale-105"
+              className="flex-none w-72 group/item transition-all duration-300 hover:scale-110"
             >
-              <div className="relative aspect-video rounded overflow-hidden">
+              <div className="relative aspect-video rounded-lg overflow-hidden shadow-xl">
                 <img
                   src={video.thumbnail_url}
                   alt={video.title}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black/0 group-hover/item:bg-black/30 transition-colors" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover/item:translate-y-0 transition-transform">
+                  <p className="text-white text-sm line-clamp-2">{video.description}</p>
+                </div>
               </div>
-              <h3 className="text-white text-sm font-medium mt-2 line-clamp-1">
-                {video.title}
-              </h3>
-              {video.year && (
-                <p className="text-gray-400 text-xs">{video.year}</p>
-              )}
+              <div className="mt-3 px-1">
+                <h3 className="text-white text-base font-semibold line-clamp-2 leading-tight">
+                  {video.title}
+                </h3>
+                <div className="flex items-center gap-2 mt-1 text-xs text-gray-400">
+                  {video.year && <span>{video.year}</span>}
+                  {video.duration && (
+                    <>
+                      {video.year && <span>•</span>}
+                      <span>{Math.floor(video.duration / 60)} min</span>
+                    </>
+                  )}
+                </div>
+              </div>
             </button>
           ))}
         </div>

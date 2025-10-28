@@ -25,8 +25,8 @@ export default function HomePage() {
     try {
       const [categoriesRes, subcategoriesRes, videosRes] = await Promise.all([
         supabase.from('categories').select('*').order('order'),
-        supabase.from('subcategories').select('*').order('order'),
-        supabase.from('videos').select('*'),
+        supabase.from('subcategories').select('*').order('category_id, order'),
+        supabase.from('videos').select('*').order('created_at', { ascending: false }),
       ]);
 
       if (categoriesRes.data) setCategories(categoriesRes.data);
@@ -72,15 +72,16 @@ export default function HomePage() {
 
       <Hero video={featuredVideo} onPlayClick={setSelectedVideo} />
 
-      <div className="relative z-10 -mt-32 space-y-8 pb-16">
+      <div className="relative z-10 -mt-24 pb-20">
         {hasAds && (
-          <div className="px-8">
+          <div className="px-8 mb-8">
             <AdBanner />
           </div>
         )}
 
         {filteredSubcategories.map((subcategory) => {
           const subcategoryVideos = getVideosBySubcategory(subcategory.id);
+          if (subcategoryVideos.length === 0) return null;
           return (
             <VideoRow
               key={subcategory.id}
