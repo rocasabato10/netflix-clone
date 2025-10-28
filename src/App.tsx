@@ -1,17 +1,21 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './lib/supabase';
 import type { Category, Subcategory, Video } from './lib/supabase';
+import { useAuth } from './contexts/AuthContext';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import VideoRow from './components/VideoRow';
 import VideoModal from './components/VideoModal';
+import AuthModal from './components/AuthModal';
 
 function App() {
+  const { user, loading: authLoading } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [videos, setVideos] = useState<Video[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,10 +55,24 @@ function App() {
 
   const filteredSubcategories = getFilteredSubcategories();
 
-  if (loading) {
+  useEffect(() => {
+    if (!authLoading && !user) {
+      setShowAuthModal(true);
+    }
+  }, [authLoading, user]);
+
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-white text-xl">Loading ModaFlix...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-black">
+        {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
       </div>
     );
   }
