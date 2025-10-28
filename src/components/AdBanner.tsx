@@ -3,9 +3,10 @@ import { useState } from 'react';
 
 interface AdBannerProps {
   onClose?: () => void;
+  onUpgradeClick?: () => void;
 }
 
-export default function AdBanner({ onClose }: AdBannerProps) {
+export default function AdBanner({ onClose, onUpgradeClick }: AdBannerProps) {
   const [closed, setClosed] = useState(false);
 
   const handleClose = () => {
@@ -37,7 +38,10 @@ export default function AdBanner({ onClose }: AdBannerProps) {
           </p>
         </div>
         <div className="ml-4">
-          <button className="px-6 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition font-semibold whitespace-nowrap">
+          <button
+            onClick={onUpgradeClick}
+            className="px-6 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition font-semibold whitespace-nowrap"
+          >
             Scopri Premium
           </button>
         </div>

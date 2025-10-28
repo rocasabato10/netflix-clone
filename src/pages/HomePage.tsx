@@ -8,9 +8,10 @@ import VideoRow from '../components/VideoRow';
 import VideoModal from '../components/VideoModal';
 import AdBanner from '../components/AdBanner';
 import AuthModal from '../components/AuthModal';
+import SubscriptionModal from '../components/SubscriptionModal';
 
 export default function HomePage() {
-  const { hasAds } = useSubscription();
+  const { hasAds, createSubscription } = useSubscription();
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [videos, setVideos] = useState<Video[]>([]);
@@ -19,6 +20,7 @@ export default function HomePage() {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -103,15 +105,16 @@ export default function HomePage() {
       <div className="relative z-10 -mt-24 pb-20">
         {hasAds && (
           <div className="px-8 mb-8">
-            <AdBanner />
+            <AdBanner onUpgradeClick={() => setShowSubscriptionModal(true)} />
           </div>
         )}
 
         {mostViewedVideos.length > 0 && (
           <VideoRow
-            title="Most Viewed"
+            title="Top 10 in Italy"
             videos={mostViewedVideos}
             onVideoClick={setSelectedVideo}
+            showRanking={true}
           />
         )}
 
@@ -139,6 +142,20 @@ export default function HomePage() {
 
       {showAuthModal && (
         <AuthModal onClose={() => setShowAuthModal(false)} />
+      )}
+
+      {showSubscriptionModal && (
+        <SubscriptionModal
+          onClose={() => setShowSubscriptionModal(false)}
+          onSubscribe={async (planId) => {
+            const { error } = await createSubscription(planId);
+            if (!error) {
+              setShowSubscriptionModal(false);
+            } else {
+              alert('Errore durante la creazione dell\'abbonamento');
+            }
+          }}
+        />
       )}
     </div>
   );

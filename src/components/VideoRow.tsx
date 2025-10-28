@@ -6,9 +6,10 @@ interface VideoRowProps {
   title: string;
   videos: Video[];
   onVideoClick: (video: Video) => void;
+  showRanking?: boolean;
 }
 
-export default function VideoRow({ title, videos, onVideoClick }: VideoRowProps) {
+export default function VideoRow({ title, videos, onVideoClick, showRanking = false }: VideoRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(videos.length > 4);
@@ -49,13 +50,24 @@ export default function VideoRow({ title, videos, onVideoClick }: VideoRowProps)
           className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {videos.map((video) => (
+          {videos.map((video, index) => (
             <button
               key={video.id}
               onClick={() => onVideoClick(video)}
               className="flex-none w-72 group/item transition-all duration-300 hover:scale-110"
             >
               <div className="relative aspect-video rounded-lg overflow-hidden shadow-xl">
+                {showRanking && index < 10 && (
+                  <div className="absolute left-0 bottom-0 z-20 text-[180px] font-black leading-none text-transparent pointer-events-none" style={{
+                    WebkitTextStroke: '3px white',
+                    textShadow: '4px 4px 8px rgba(0,0,0,0.9)',
+                    fontFamily: 'Arial Black, sans-serif',
+                    transform: 'translateY(20%)',
+                    paddingLeft: '0.1em'
+                  }}>
+                    {index + 1}
+                  </div>
+                )}
                 <img
                   src={video.thumbnail_url}
                   alt={video.title}
