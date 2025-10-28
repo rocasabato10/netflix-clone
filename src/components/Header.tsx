@@ -1,6 +1,5 @@
-import { Sparkles, LogOut, Settings } from 'lucide-react';
+import { Sparkles, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   onCategoryChange: (categorySlug: string | null) => void;
@@ -10,7 +9,6 @@ interface HeaderProps {
 
 export default function Header({ onCategoryChange, categories, activeCategory }: HeaderProps) {
   const { user, signOut } = useAuth();
-  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     await signOut();
@@ -60,13 +58,6 @@ export default function Header({ onCategoryChange, categories, activeCategory }:
         {user && (
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-300 hidden md:block">{user.email}</span>
-            <button
-              onClick={() => navigate('/admin-panel')}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition"
-            >
-              <Settings className="w-4 h-4" />
-              Admin
-            </button>
             <button
               onClick={handleSignOut}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded hover:bg-rose-700 transition"

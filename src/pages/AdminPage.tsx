@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Category } from '../lib/supabase';
-import { Users, TrendingUp, Upload, ArrowLeft } from 'lucide-react';
+import { useAdmin } from '../hooks/useAdmin';
+import { Users, TrendingUp, Upload, ArrowLeft, Lock } from 'lucide-react';
 import VideoUpload from '../components/VideoUpload';
 import CategoryManager from '../components/CategoryManager';
 
@@ -27,6 +28,7 @@ interface SubscriptionStats {
 
 export default function AdminPage() {
   const navigate = useNavigate();
+  const { isAdmin, loading: adminLoading } = useAdmin();
   const [users, setUsers] = useState<UserWithSubscription[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [stats, setStats] = useState<SubscriptionStats>({
@@ -39,8 +41,10 @@ export default function AdminPage() {
   const [showUploadModal, setShowUploadModal] = useState(false);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (!adminLoading && isAdmin) {
+      loadData();
+    }
+  }, [adminLoading, isAdmin]);
 
   const loadData = async () => {
     try {
@@ -89,10 +93,28 @@ export default function AdminPage() {
     }
   };
 
-  if (loading) {
+  if (adminLoading || loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-white text-xl">Loading admin panel...</div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <Lock className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h1 className="text-3xl font-bold text-white mb-4">Accesso Negato</h1>
+          <p className="text-gray-400 mb-6">Non hai i permessi per accedere al pannello admin.</p>
+          <button
+            onClick={() => navigate('/')}
+            className="bg-rose-600 text-white px-6 py-3 rounded-lg hover:bg-rose-700 transition font-semibold"
+          >
+            Torna alla Home
+          </button>
+        </div>
       </div>
     );
   }
