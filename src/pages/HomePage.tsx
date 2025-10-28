@@ -39,7 +39,8 @@ export default function HomePage() {
     }
   };
 
-  const featuredVideo = videos.find((v) => v.featured) || videos[0] || null;
+  const featuredVideos = videos.filter((v) => v.featured).slice(0, 5);
+  const heroVideos = featuredVideos.length > 0 ? featuredVideos : videos.slice(0, 5);
 
   const getFilteredSubcategories = () => {
     if (!activeCategory) return subcategories;
@@ -70,7 +71,7 @@ export default function HomePage() {
         activeCategory={activeCategory}
       />
 
-      <Hero video={featuredVideo} onPlayClick={setSelectedVideo} />
+      <Hero videos={heroVideos} onPlayClick={setSelectedVideo} />
 
       <div className="relative z-10 -mt-24 pb-20">
         {hasAds && (
