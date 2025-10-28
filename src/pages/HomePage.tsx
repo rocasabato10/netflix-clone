@@ -14,6 +14,7 @@ export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [videos, setVideos] = useState<Video[]>([]);
+  const [mostViewedIds, setMostViewedIds] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
@@ -25,15 +26,34 @@ export default function HomePage() {
 
   const loadData = async () => {
     try {
-      const [categoriesRes, subcategoriesRes, videosRes] = await Promise.all([
+      const [categoriesRes, subcategoriesRes, videosRes, mostViewedRes] = await Promise.all([
         supabase.from('categories').select('*').order('order'),
         supabase.from('subcategories').select('*').order('category_id, order'),
         supabase.from('videos').select('*').order('created_at', { ascending: false }),
+        supabase
+          .from('video_views')
+          .select('video_id, videos!inner(*)')
+          .order('viewed_at', { ascending: false })
+          .limit(100),
       ]);
 
       if (categoriesRes.data) setCategories(categoriesRes.data);
       if (subcategoriesRes.data) setSubcategories(subcategoriesRes.data);
       if (videosRes.data) setVideos(videosRes.data);
+
+      if (mostViewedRes.data) {
+        const viewCounts = mostViewedRes.data.reduce((acc: Record<string, number>, view: any) => {
+          acc[view.video_id] = (acc[view.video_id] || 0) + 1;
+          return acc;
+        }, {});
+
+        const sortedByViews = Object.entries(viewCounts)
+          .sort(([, a], [, b]) => (b as number) - (a as number))
+          .slice(0, 10)
+          .map(([videoId]) => videoId);
+
+        setMostViewedIds(sortedByViews);
+      }
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -43,6 +63,10 @@ export default function HomePage() {
 
   const featuredVideos = videos.filter((v) => v.featured).slice(0, 5);
   const heroVideos = featuredVideos.length > 0 ? featuredVideos : videos.slice(0, 5);
+
+  const mostViewedVideos = mostViewedIds
+    .map((id) => videos.find((v) => v.id === id))
+    .filter((v): v is Video => !!v);
 
   const getFilteredSubcategories = () => {
     if (!activeCategory) return subcategories;
@@ -81,6 +105,14 @@ export default function HomePage() {
           <div className="px-8 mb-8">
             <AdBanner />
           </div>
+        )}
+
+        {mostViewedVideos.length > 0 && (
+          <VideoRow
+            title="Most Viewed"
+            videos={mostViewedVideos}
+            onVideoClick={setSelectedVideo}
+          />
         )}
 
         {filteredSubcategories.map((subcategory) => {

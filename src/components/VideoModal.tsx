@@ -1,9 +1,10 @@
-import { X, Play, Lock } from 'lucide-react';
+import { X, Play, Lock, Heart, Eye } from 'lucide-react';
 import type { Video } from '../lib/supabase';
 import { useSubscription } from '../hooks/useSubscription';
 import { useAuth } from '../contexts/AuthContext';
+import { useVideoInteractions } from '../hooks/useVideoInteractions';
 import AdBanner from './AdBanner';
-import { useState } from 'react';
+import { useEffect } from 'react';
 
 interface VideoModalProps {
   video: Video | null;
@@ -14,9 +15,26 @@ interface VideoModalProps {
 export default function VideoModal({ video, onClose, onAuthRequired }: VideoModalProps) {
   const { hasAds } = useSubscription();
   const { user } = useAuth();
-  const [showAuthPrompt, setShowAuthPrompt] = useState(!user);
+  const { likesCount, viewsCount, hasLiked, recordView, toggleLike } = useVideoInteractions(
+    video?.id || ''
+  );
+
+  useEffect(() => {
+    if (video && user) {
+      recordView();
+    }
+  }, [video?.id, user]);
 
   if (!video) return null;
+
+  const handleLikeClick = async () => {
+    if (!user) {
+      onClose();
+      onAuthRequired();
+      return;
+    }
+    await toggleLike();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4">
@@ -67,11 +85,30 @@ export default function VideoModal({ video, onClose, onAuthRequired }: VideoModa
         <div className="p-8 space-y-4">
           {hasAds && <AdBanner />}
 
-          <div className="flex items-center gap-4">
-            <h2 className="text-3xl font-bold text-white">{video.title}</h2>
-            {video.year && (
-              <span className="text-gray-400 text-lg">{video.year}</span>
-            )}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h2 className="text-3xl font-bold text-white">{video.title}</h2>
+              {video.year && (
+                <span className="text-gray-400 text-lg">{video.year}</span>
+              )}
+            </div>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2 text-gray-400">
+                <Eye className="w-5 h-5" />
+                <span className="text-lg font-medium">{viewsCount}</span>
+              </div>
+              <button
+                onClick={handleLikeClick}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+                  hasLiked
+                    ? 'bg-rose-600 text-white hover:bg-rose-700'
+                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
+                }`}
+              >
+                <Heart className={`w-5 h-5 ${hasLiked ? 'fill-current' : ''}`} />
+                <span className="text-lg font-medium">{likesCount}</span>
+              </button>
+            </div>
           </div>
 
           {video.description && (

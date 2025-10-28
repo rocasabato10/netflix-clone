@@ -61,3 +61,23 @@ export type UserSubscription = {
   created_at: string;
   updated_at: string;
 };
+
+export type VideoView = {
+  id: string;
+  video_id: string;
+  user_id: string | null;
+  viewed_at: string;
+};
+
+export type VideoLike = {
+  id: string;
+  video_id: string;
+  user_id: string;
+  created_at: string;
+};
+
+export type VideoWithStats = Video & {
+  views_count?: number;
+  likes_count?: number;
+  user_has_liked?: boolean;
+};
