@@ -9,8 +9,8 @@ import VideoRow from './components/VideoRow';
 import VideoModal from './components/VideoModal';
 import AuthModal from './components/AuthModal';
 import SubscriptionModal from './components/SubscriptionModal';
-import VideoUpload from './components/VideoUpload';
 import AdBanner from './components/AdBanner';
+import AdminPanel from './components/AdminPanel';
 
 function App() {
   const { user, loading: authLoading } = useAuth();
@@ -22,7 +22,7 @@ function App() {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
-  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -146,18 +146,15 @@ function App() {
         <VideoModal video={selectedVideo} onClose={() => setSelectedVideo(null)} />
       )}
 
-      {showUploadModal && (
-        <VideoUpload
-          onClose={() => setShowUploadModal(false)}
-          onUploadComplete={loadData}
-        />
+      {showAdminPanel && (
+        <AdminPanel onClose={() => setShowAdminPanel(false)} onDataUpdate={loadData} />
       )}
 
       <button
-        onClick={() => setShowUploadModal(true)}
-        className="fixed bottom-8 right-8 bg-rose-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-rose-700 transition font-semibold"
+        onClick={() => setShowAdminPanel(true)}
+        className="fixed bottom-8 right-8 bg-blue-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-blue-700 transition font-semibold"
       >
-        Carica Video
+        Admin Panel
       </button>
     </div>
   );
