@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { X, Users, TrendingUp, Upload } from 'lucide-react';
-import VideoUpload from './VideoUpload';
+import { Users, TrendingUp, Upload, ArrowLeft } from 'lucide-react';
+import VideoUpload from '../components/VideoUpload';
 
 interface UserWithSubscription {
   id: string;
@@ -22,12 +23,8 @@ interface SubscriptionStats {
   noSubscription: number;
 }
 
-interface AdminPanelProps {
-  onClose: () => void;
-  onDataUpdate: () => void;
-}
-
-export default function AdminPanel({ onClose, onDataUpdate }: AdminPanelProps) {
+export default function AdminPage() {
+  const navigate = useNavigate();
   const [users, setUsers] = useState<UserWithSubscription[]>([]);
   const [stats, setStats] = useState<SubscriptionStats>({
     totalUsers: 0,
@@ -82,40 +79,35 @@ export default function AdminPanel({ onClose, onDataUpdate }: AdminPanelProps) {
     }
   };
 
-  const handleUploadComplete = () => {
-    onDataUpdate();
-    setShowUploadModal(false);
-  };
-
   if (loading) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-white text-xl">Loading admin panel...</div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-90">
-      <div className="min-h-screen p-8">
+    <div className="min-h-screen bg-black">
+      <div className="p-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold text-white">Admin Panel</h1>
-            <div className="flex gap-4">
+            <div className="flex items-center gap-4">
               <button
-                onClick={() => setShowUploadModal(true)}
-                className="flex items-center gap-2 bg-rose-600 text-white px-6 py-3 rounded-lg hover:bg-rose-700 transition font-semibold"
-              >
-                <Upload size={20} />
-                Carica Video
-              </button>
-              <button
-                onClick={onClose}
+                onClick={() => navigate('/')}
                 className="text-gray-400 hover:text-white transition"
               >
-                <X size={32} />
+                <ArrowLeft size={32} />
               </button>
+              <h1 className="text-4xl font-bold text-white">Admin Panel</h1>
             </div>
+            <button
+              onClick={() => setShowUploadModal(true)}
+              className="flex items-center gap-2 bg-rose-600 text-white px-6 py-3 rounded-lg hover:bg-rose-700 transition font-semibold"
+            >
+              <Upload size={20} />
+              Carica Video
+            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -235,7 +227,7 @@ export default function AdminPanel({ onClose, onDataUpdate }: AdminPanelProps) {
       {showUploadModal && (
         <VideoUpload
           onClose={() => setShowUploadModal(false)}
-          onUploadComplete={handleUploadComplete}
+          onUploadComplete={loadData}
         />
       )}
     </div>
