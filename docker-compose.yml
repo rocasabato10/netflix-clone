@@ -8,13 +8,19 @@ services:
       args:
         VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
         VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
-    container_name: modaflix-app
-    networks:
-      - nginx-proxy
     restart: unless-stopped
     environment:
       - NODE_ENV=production
 
-networks:
-  nginx-proxy:
-    external: true
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certs:/etc/nginx/certs
+    depends_on:
+      - app
+    restart: unless-stopped
