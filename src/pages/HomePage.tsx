@@ -34,7 +34,7 @@ export default function HomePage() {
         supabase.from('videos').select('*').order('created_at', { ascending: false }),
         supabase
           .from('video_views')
-          .select('video_id, videos!inner(*)')
+          .select('video_id')
           .order('viewed_at', { ascending: false })
           .limit(100),
       ]);
