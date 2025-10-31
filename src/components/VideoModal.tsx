@@ -79,8 +79,9 @@ export default function VideoModal({ video, onClose, onAuthRequired }: VideoModa
             <iframe
               src={video.video_url}
               className="w-full h-full"
-              allow="autoplay; fullscreen; picture-in-picture"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
+              referrerPolicy="strict-origin-when-cross-origin"
               title={video.title}
             />
           )}
