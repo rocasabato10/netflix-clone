@@ -25,14 +25,6 @@ export default function HomePage() {
 
   useEffect(() => {
     loadData();
-    const timeout = setTimeout(() => {
-      if (loading) {
-        console.warn('Data loading timeout');
-        setLoading(false);
-        setError('Timeout loading data. Please refresh the page.');
-      }
-    }, 10000);
-    return () => clearTimeout(timeout);
   }, []);
 
   const loadData = async () => {
