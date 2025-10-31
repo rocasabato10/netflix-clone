@@ -47,38 +47,42 @@ export default function VideoModal({ video, onClose, onAuthRequired }: VideoModa
         </button>
 
         <div className="relative aspect-video bg-gray-900">
-          <img
-            src={video.thumbnail_url}
-            alt={video.title}
-            className="w-full h-full object-cover"
-          />
           {!user ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-              <div className="text-center space-y-6 px-8">
-                <div className="bg-rose-500 rounded-full p-8 inline-block">
-                  <Lock className="w-20 h-20 text-white" />
+            <>
+              <img
+                src={video.thumbnail_url}
+                alt={video.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                <div className="text-center space-y-6 px-8">
+                  <div className="bg-rose-500 rounded-full p-8 inline-block">
+                    <Lock className="w-20 h-20 text-white" />
+                  </div>
+                  <h3 className="text-3xl font-bold text-white">Authentication Required</h3>
+                  <p className="text-gray-300 text-lg max-w-md">
+                    Please sign in or create an account to watch this video
+                  </p>
+                  <button
+                    onClick={() => {
+                      onClose();
+                      onAuthRequired();
+                    }}
+                    className="bg-white text-black px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-200 transition shadow-xl"
+                  >
+                    Sign In to Watch
+                  </button>
                 </div>
-                <h3 className="text-3xl font-bold text-white">Authentication Required</h3>
-                <p className="text-gray-300 text-lg max-w-md">
-                  Please sign in or create an account to watch this video
-                </p>
-                <button
-                  onClick={() => {
-                    onClose();
-                    onAuthRequired();
-                  }}
-                  className="bg-white text-black px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-200 transition shadow-xl"
-                >
-                  Sign In to Watch
-                </button>
               </div>
-            </div>
+            </>
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-black/60 backdrop-blur-sm rounded-full p-6">
-                <Play className="w-16 h-16 text-white fill-current" />
-              </div>
-            </div>
+            <iframe
+              src={video.video_url}
+              className="w-full h-full"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+              title={video.title}
+            />
           )}
         </div>
 
