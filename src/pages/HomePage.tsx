@@ -40,6 +40,19 @@ export default function HomePage() {
           .limit(100),
       ]);
 
+      if (categoriesRes.error) {
+        console.error('Categories error:', categoriesRes.error);
+        throw new Error(`Categories: ${categoriesRes.error.message}`);
+      }
+      if (subcategoriesRes.error) {
+        console.error('Subcategories error:', subcategoriesRes.error);
+        throw new Error(`Subcategories: ${subcategoriesRes.error.message}`);
+      }
+      if (videosRes.error) {
+        console.error('Videos error:', videosRes.error);
+        throw new Error(`Videos: ${videosRes.error.message}`);
+      }
+
       if (categoriesRes.data) setCategories(categoriesRes.data);
       if (subcategoriesRes.data) setSubcategories(subcategoriesRes.data);
       if (videosRes.data) setVideos(videosRes.data);
@@ -59,7 +72,7 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error('Error loading data:', error);
-      setError('Failed to load data. Please check your connection.');
+      setError(error instanceof Error ? error.message : 'Failed to load data. Please check your connection.');
     } finally {
       setLoading(false);
     }
