@@ -1,4 +1,4 @@
-import { Sparkles, LogOut, LogIn } from 'lucide-react';
+import { LogOut, LogIn } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface HeaderProps {
@@ -21,12 +21,13 @@ export default function Header({ onCategoryChange, categories, activeCategory, o
         <div className="flex items-center gap-8">
           <button
             onClick={() => onCategoryChange(null)}
-            className="flex items-center gap-2 text-2xl font-bold text-white hover:opacity-80 transition"
+            className="hover:opacity-80 transition"
           >
-            <Sparkles className="w-8 h-8 text-rose-500" />
-            <span className="bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
-              ModaFlix
-            </span>
+            <img
+              src="/WhatsApp Image 2025-10-29 at 18.03.10.jpeg"
+              alt="ModaFlix"
+              className="h-12 w-auto"
+            />
           </button>
 
           <nav className="hidden md:flex gap-6">
