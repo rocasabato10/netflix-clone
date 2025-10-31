@@ -19,11 +19,20 @@ export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   useEffect(() => {
     loadData();
+    const timeout = setTimeout(() => {
+      if (loading) {
+        console.warn('Data loading timeout');
+        setLoading(false);
+        setError('Timeout loading data. Please refresh the page.');
+      }
+    }, 10000);
+    return () => clearTimeout(timeout);
   }, []);
 
   const loadData = async () => {
@@ -58,6 +67,7 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error('Error loading data:', error);
+      setError('Failed to load data. Please check your connection.');
     } finally {
       setLoading(false);
     }
@@ -87,6 +97,26 @@ export default function HomePage() {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-white text-xl">Loading ModaFlix...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 text-xl mb-4">{error}</div>
+          <button
+            onClick={() => {
+              setError(null);
+              setLoading(true);
+              loadData();
+            }}
+            className="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
