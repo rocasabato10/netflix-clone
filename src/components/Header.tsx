@@ -26,7 +26,7 @@ export default function Header({ onCategoryChange, categories, activeCategory, o
             <img
               src="/WhatsApp Image 2025-10-29 at 18.03.10.jpeg"
               alt="ModaFlix"
-              className="h-12 w-auto"
+              className="h-16 w-auto"
             />
           </button>
 
