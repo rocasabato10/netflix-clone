@@ -1,5 +1,7 @@
-import { LogOut, LogIn } from 'lucide-react';
+import { LogOut, LogIn, Shield } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useAdmin } from '../hooks/useAdmin';
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   onCategoryChange: (categorySlug: string | null) => void;
@@ -10,6 +12,8 @@ interface HeaderProps {
 
 export default function Header({ onCategoryChange, categories, activeCategory, onAuthClick }: HeaderProps) {
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdmin();
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     await signOut();
@@ -61,6 +65,15 @@ export default function Header({ onCategoryChange, categories, activeCategory, o
           {user ? (
             <>
               <span className="text-sm text-gray-300 hidden md:block">{user.email}</span>
+              {isAdmin && (
+                <button
+                  onClick={() => navigate('/admin-panel')}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition"
+                >
+                  <Shield className="w-4 h-4" />
+                  Admin Panel
+                </button>
+              )}
               <button
                 onClick={handleSignOut}
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded hover:bg-rose-700 transition"
