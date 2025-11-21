@@ -39,13 +39,13 @@ export default function HomePage() {
           id: video.id,
           title: video.title,
           description: video.description,
-          thumbnail: video.thumbnail_url,
-          videoUrl: video.video_url,
-          duration: video.duration,
-          views: video.views.toString(),
-          uploadDate: new Date(video.upload_date).toLocaleDateString('it-IT'),
-          subcategory_id: 'general',
-          featured: false,
+          thumbnail_url: video.thumbnail_url,
+          video_url: video.video_url,
+          duration: parseInt(video.duration) || 0,
+          year: video.year || 0,
+          subcategory_id: video.subcategory_id || 'general',
+          featured: video.featured || false,
+          created_at: video.upload_date,
         }));
         setVideos(mappedVideos);
       } else {
