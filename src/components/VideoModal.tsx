@@ -24,7 +24,8 @@ export default function VideoModal({ video, onClose }: VideoModalProps) {
             src={video.video_url}
             className="w-full h-full"
             controls
-            autoPlay
+            crossOrigin="anonymous"
+            preload="metadata"
             title={video.title}
           >
             Il tuo browser non supporta il tag video.
