@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRef, useState } from 'react';
-import type { Video } from '../lib/supabase';
+import type { Video } from '../types';
 
 interface VideoRowProps {
   title: string;

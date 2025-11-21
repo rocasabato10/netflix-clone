@@ -1,6 +1,6 @@
 import { Play, Info, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import type { Video } from '../lib/supabase';
+import type { Video } from '../types';
 
 interface HeroProps {
   videos: Video[];
