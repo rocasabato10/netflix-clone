@@ -20,14 +20,15 @@ export default function VideoModal({ video, onClose }: VideoModalProps) {
         </button>
 
         <div className="relative aspect-video bg-gray-900">
-          <iframe
+          <video
             src={video.video_url}
             className="w-full h-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-            referrerPolicy="strict-origin-when-cross-origin"
+            controls
+            autoPlay
             title={video.title}
-          />
+          >
+            Il tuo browser non supporta il tag video.
+          </video>
         </div>
 
         <div className="p-8 space-y-4">
