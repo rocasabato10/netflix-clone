@@ -34,6 +34,8 @@ export default function HomePage() {
         onCategoryChange={setActiveCategory}
         categories={categories}
         activeCategory={activeCategory}
+        videos={videos}
+        onVideoSelect={setSelectedVideo}
       />
 
       <Hero videos={heroVideos} onPlayClick={setSelectedVideo} />
