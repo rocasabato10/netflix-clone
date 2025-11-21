@@ -5,17 +5,24 @@ import Header from '../components/Header';
 import Hero from '../components/Hero';
 import VideoRow from '../components/VideoRow';
 import VideoModal from '../components/VideoModal';
+import { SubscriptionPlans } from '../components/SubscriptionPlans';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [videos, setVideos] = useState<Video[]>(mockVideos);
   const [loading, setLoading] = useState(true);
+  const [userSubscription, setUserSubscription] = useState<string>('free');
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchVideos();
-  }, []);
+    if (user) {
+      fetchUserSubscription();
+    }
+  }, [user]);
 
   const fetchVideos = async () => {
     try {
@@ -49,6 +56,45 @@ export default function HomePage() {
       setVideos(mockVideos);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchUserSubscription = async () => {
+    if (!user) return;
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('subscription_type')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (!error && data) {
+        setUserSubscription(data.subscription_type || 'free');
+      }
+    } catch (error) {
+      console.error('Error fetching subscription:', error);
+    }
+  };
+
+  const handleSubscriptionSelect = async (planSlug: string) => {
+    if (!user) return;
+    try {
+      const expiresAt = new Date();
+      expiresAt.setMonth(expiresAt.getMonth() + 1);
+
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({
+          subscription_type: planSlug,
+          subscription_expires_at: expiresAt.toISOString()
+        })
+        .eq('id', user.id);
+
+      if (!error) {
+        setUserSubscription(planSlug);
+      }
+    } catch (error) {
+      console.error('Error updating subscription:', error);
     }
   };
 
@@ -114,6 +160,44 @@ export default function HomePage() {
             />
           );
         })}
+
+        <div className="px-8 mt-16">
+          <div className="max-w-6xl mx-auto bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 md:p-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 text-center">
+              Scegli il piano perfetto per te
+            </h2>
+            <p className="text-gray-300 text-center mb-8 text-lg">
+              Accedi a contenuti esclusivi di moda con i nostri piani di abbonamento
+            </p>
+
+            {user ? (
+              <div className="mb-6">
+                <div className="bg-blue-600 bg-opacity-20 border border-blue-500 rounded-lg p-4 mb-6 text-center">
+                  <p className="text-white">
+                    Piano attuale: <span className="font-bold capitalize">{userSubscription}</span>
+                  </p>
+                </div>
+                <SubscriptionPlans
+                  onSelectPlan={handleSubscriptionSelect}
+                  selectedPlan={userSubscription}
+                  showTitle={false}
+                />
+              </div>
+            ) : (
+              <div>
+                <SubscriptionPlans
+                  onSelectPlan={() => {}}
+                  showTitle={false}
+                />
+                <p className="text-center text-gray-300 mt-6">
+                  <button className="text-blue-400 hover:text-blue-300 font-medium">
+                    Accedi per sottoscrivere un abbonamento
+                  </button>
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {selectedVideo && (
