@@ -1,19 +1,61 @@
-import { useState } from 'react';
-import { categories, subcategories, videos } from '../mockData';
+import { useState, useEffect } from 'react';
+import { categories, subcategories } from '../mockData';
 import type { Video } from '../types';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import VideoRow from '../components/VideoRow';
 import VideoModal from '../components/VideoModal';
+import { supabase } from '../lib/supabase';
 
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchVideos();
+  }, []);
+
+  const fetchVideos = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('videos')
+        .select('*')
+        .order('upload_date', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching videos:', error);
+        setVideos([]);
+      } else {
+        const mappedVideos: Video[] = (data || []).map((video) => ({
+          id: video.id,
+          title: video.title,
+          description: video.description,
+          thumbnail: video.thumbnail_url,
+          videoUrl: video.video_url,
+          duration: video.duration,
+          views: video.views.toString(),
+          uploadDate: new Date(video.upload_date).toLocaleDateString('it-IT'),
+          subcategory_id: 'general',
+          featured: false,
+        }));
+        setVideos(mappedVideos);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setVideos([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const featuredVideos = videos.filter((v) => v.featured).slice(0, 5);
   const heroVideos = featuredVideos.length > 0 ? featuredVideos : videos.slice(0, 5);
 
-  const mostViewedVideos = videos.slice(0, 10);
+  const mostViewedVideos = [...videos]
+    .sort((a, b) => parseInt(b.views) - parseInt(a.views))
+    .slice(0, 10);
 
   const getFilteredSubcategories = () => {
     if (!activeCategory) return subcategories;
@@ -27,6 +69,14 @@ export default function HomePage() {
   };
 
   const filteredSubcategories = getFilteredSubcategories();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-2xl">Caricamento...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black">
@@ -50,6 +100,14 @@ export default function HomePage() {
           />
         )}
 
+        {videos.length > 0 && (
+          <VideoRow
+            title="Tutti i Video"
+            videos={videos}
+            onVideoClick={setSelectedVideo}
+          />
+        )}
+
         {filteredSubcategories.map((subcategory) => {
           const subcategoryVideos = getVideosBySubcategory(subcategory.id);
           if (subcategoryVideos.length === 0) return null;
@@ -62,6 +120,13 @@ export default function HomePage() {
             />
           );
         })}
+
+        {videos.length === 0 && (
+          <div className="text-center text-gray-400 py-20">
+            <p className="text-xl">Nessun video disponibile</p>
+            <p className="mt-2">Accedi come amministratore per caricare i primi video</p>
+          </div>
+        )}
       </div>
 
       {selectedVideo && (
