@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
-import AdminPage from './pages/AdminPage';
 import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
@@ -10,7 +9,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/home" element={<HomePage />} />
-          <Route path="/admin-panel" element={<AdminPage />} />
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       </BrowserRouter>

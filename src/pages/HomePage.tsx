@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { categories, subcategories } from '../mockData';
+import { categories, subcategories, videos as mockVideos } from '../mockData';
 import type { Video } from '../types';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
@@ -10,7 +10,7 @@ import { supabase } from '../lib/supabase';
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
-  const [videos, setVideos] = useState<Video[]>([]);
+  const [videos, setVideos] = useState<Video[]>(mockVideos);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,9 +26,9 @@ export default function HomePage() {
 
       if (error) {
         console.error('Error fetching videos:', error);
-        setVideos([]);
-      } else {
-        const mappedVideos: Video[] = (data || []).map((video) => ({
+        setVideos(mockVideos);
+      } else if (data && data.length > 0) {
+        const mappedVideos: Video[] = data.map((video) => ({
           id: video.id,
           title: video.title,
           description: video.description,
@@ -41,10 +41,12 @@ export default function HomePage() {
           featured: false,
         }));
         setVideos(mappedVideos);
+      } else {
+        setVideos(mockVideos);
       }
     } catch (error) {
       console.error('Error:', error);
-      setVideos([]);
+      setVideos(mockVideos);
     } finally {
       setLoading(false);
     }
@@ -100,14 +102,6 @@ export default function HomePage() {
           />
         )}
 
-        {videos.length > 0 && (
-          <VideoRow
-            title="Tutti i Video"
-            videos={videos}
-            onVideoClick={setSelectedVideo}
-          />
-        )}
-
         {filteredSubcategories.map((subcategory) => {
           const subcategoryVideos = getVideosBySubcategory(subcategory.id);
           if (subcategoryVideos.length === 0) return null;
@@ -120,13 +114,6 @@ export default function HomePage() {
             />
           );
         })}
-
-        {videos.length === 0 && (
-          <div className="text-center text-gray-400 py-20">
-            <p className="text-xl">Nessun video disponibile</p>
-            <p className="mt-2">Accedi come amministratore per caricare i primi video</p>
-          </div>
-        )}
       </div>
 
       {selectedVideo && (
