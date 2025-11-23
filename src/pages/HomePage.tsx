@@ -153,9 +153,11 @@ export default function HomePage() {
     .slice(0, 10);
 
   const getFilteredSubcategories = () => {
-    if (!activeCategory) return subcategories;
+    if (!activeCategory) {
+      return subcategories;
+    }
     const category = categories.find((c) => c.slug === activeCategory);
-    if (!category) return subcategories;
+    if (!category) return [];
     return subcategories.filter((s) => s.category_id === category.id);
   };
 
@@ -171,7 +173,11 @@ export default function HomePage() {
   };
 
   const getVideosBySubcategory = (subcategoryId: string) => {
-    return videos.filter((v) => v.subcategory_id === subcategoryId).slice(0, 10);
+    const filtered = videos.filter((v) => v.subcategory_id === subcategoryId);
+    if (activeCategory) {
+      return filtered;
+    }
+    return filtered.slice(0, 10);
   };
 
   const filteredSubcategories = getFilteredSubcategories();
@@ -196,10 +202,10 @@ export default function HomePage() {
         onSubcategorySelect={handleSubcategorySelect}
       />
 
-      <Hero videos={heroVideos} onPlayClick={setSelectedVideo} />
+      {!activeCategory && <Hero videos={heroVideos} onPlayClick={setSelectedVideo} />}
 
-      <div className="relative z-10 -mt-24 pb-20">
-        {mostViewedVideos.length > 0 && (
+      <div className={`relative z-10 pb-20 ${!activeCategory ? '-mt-24' : 'pt-32'}`}>
+        {!activeCategory && mostViewedVideos.length > 0 && (
           <VideoRow
             title="Top 10 in Italy"
             videos={mostViewedVideos}
