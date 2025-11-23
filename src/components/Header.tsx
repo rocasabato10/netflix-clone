@@ -74,7 +74,7 @@ export default function Header({
             >
               <img
                 src="/WhatsApp Image 2025-10-29 at 18.03.10.jpeg"
-                alt="ModaFlix"
+                alt="ModaFlicks"
                 className="h-16 w-auto"
               />
             </button>
