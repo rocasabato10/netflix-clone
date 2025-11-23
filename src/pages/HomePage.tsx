@@ -94,7 +94,7 @@ export default function HomePage() {
           featured: video.featured || false,
           created_at: video.upload_date,
         }));
-        setVideos(mappedVideos);
+        setVideos([...mockVideos, ...mappedVideos]);
       } else {
         setVideos(mockVideos);
       }
@@ -171,7 +171,7 @@ export default function HomePage() {
   };
 
   const getVideosBySubcategory = (subcategoryId: string) => {
-    return videos.filter((v) => v.subcategory_id === subcategoryId);
+    return videos.filter((v) => v.subcategory_id === subcategoryId).slice(0, 10);
   };
 
   const filteredSubcategories = getFilteredSubcategories();
