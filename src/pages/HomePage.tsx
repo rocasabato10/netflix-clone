@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { categories, subcategories, videos as mockVideos } from '../mockData';
+import { videos as mockVideos } from '../mockData';
 import type { Video } from '../types';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
@@ -9,20 +9,67 @@ import { SubscriptionPlans } from '../components/SubscriptionPlans';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+interface Subcategory {
+  id: string;
+  name: string;
+  slug: string;
+  category_id: string;
+}
+
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [videos, setVideos] = useState<Video[]>(mockVideos);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [userSubscription, setUserSubscription] = useState<string>('free');
   const { user } = useAuth();
 
   useEffect(() => {
+    fetchCategories();
+    fetchSubcategories();
     fetchVideos();
     if (user) {
       fetchUserSubscription();
     }
   }, [user]);
+
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('name');
+
+      if (!error && data) {
+        setCategories(data);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  const fetchSubcategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('subcategories')
+        .select('*')
+        .order('name');
+
+      if (!error && data) {
+        setSubcategories(data);
+      }
+    } catch (error) {
+      console.error('Error fetching subcategories:', error);
+    }
+  };
 
   const fetchVideos = async () => {
     try {
@@ -112,6 +159,17 @@ export default function HomePage() {
     return subcategories.filter((s) => s.category_id === category.id);
   };
 
+  const handleSubcategorySelect = (subcategoryId: string) => {
+    const subcategory = subcategories.find(s => s.id === subcategoryId);
+    if (subcategory) {
+      setActiveCategory(null);
+      const element = document.getElementById(`subcategory-${subcategoryId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   const getVideosBySubcategory = (subcategoryId: string) => {
     return videos.filter((v) => v.subcategory_id === subcategoryId);
   };
@@ -131,9 +189,11 @@ export default function HomePage() {
       <Header
         onCategoryChange={setActiveCategory}
         categories={categories}
+        subcategories={subcategories}
         activeCategory={activeCategory}
         videos={videos}
         onVideoSelect={setSelectedVideo}
+        onSubcategorySelect={handleSubcategorySelect}
       />
 
       <Hero videos={heroVideos} onPlayClick={setSelectedVideo} />
@@ -152,12 +212,13 @@ export default function HomePage() {
           const subcategoryVideos = getVideosBySubcategory(subcategory.id);
           if (subcategoryVideos.length === 0) return null;
           return (
-            <VideoRow
-              key={subcategory.id}
-              title={subcategory.name}
-              videos={subcategoryVideos}
-              onVideoClick={setSelectedVideo}
-            />
+            <div key={subcategory.id} id={`subcategory-${subcategory.id}`}>
+              <VideoRow
+                title={subcategory.name}
+                videos={subcategoryVideos}
+                onVideoClick={setSelectedVideo}
+              />
+            </div>
           );
         })}
 
