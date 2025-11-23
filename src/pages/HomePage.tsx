@@ -82,18 +82,28 @@ export default function HomePage() {
         console.error('Error fetching videos:', error);
         setVideos(mockVideos);
       } else if (data && data.length > 0) {
-        const mappedVideos: Video[] = data.map((video) => ({
-          id: video.id,
-          title: video.title,
-          description: video.description,
-          thumbnail_url: video.thumbnail_url,
-          video_url: video.video_url,
-          duration: parseInt(video.duration) || 0,
-          year: video.year || 0,
-          subcategory_id: video.subcategory_id || 'general',
-          featured: video.featured || false,
-          created_at: video.upload_date,
-        }));
+        const mappedVideos: Video[] = data.map((video) => {
+          const durationMatch = video.duration?.match(/(\d+):(\d+)/);
+          let durationInSeconds = 0;
+          if (durationMatch) {
+            const minutes = parseInt(durationMatch[1]);
+            const seconds = parseInt(durationMatch[2]);
+            durationInSeconds = (minutes * 60) + seconds;
+          }
+
+          return {
+            id: video.id,
+            title: video.title,
+            description: video.description,
+            thumbnail_url: video.thumbnail_url,
+            video_url: video.video_url,
+            duration: durationInSeconds,
+            year: 2025,
+            subcategory_id: video.subcategory_id || 'general',
+            featured: video.views > 30000,
+            created_at: video.upload_date,
+          };
+        });
         setVideos([...mockVideos, ...mappedVideos]);
       } else {
         setVideos(mockVideos);
