@@ -73,7 +73,7 @@ export default function Header({
               className="hover:opacity-80 transition"
             >
               <img
-                src="/WhatsApp Image 2025-10-29 at 18.03.10.jpeg"
+                src="/Senza titolo-1.png"
                 alt="ModaFlicks"
                 className="h-16 w-auto"
               />
