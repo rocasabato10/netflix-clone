@@ -3,5 +3,9 @@
 @tailwind utilities;
 
 body {
-  background-color: #D4AF37;
+  background-image: url('/4218377-astratto-giallo-e-grigio-grado-sfondo-chiaro-gratuito-vettoriale.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
