@@ -77,9 +77,6 @@ export default function Hero({ videos, onPlayClick }: HeroProps) {
 
       <div className="relative h-full flex flex-col justify-end px-8 md:px-16 pb-32 z-10">
         <div className="max-w-3xl space-y-6">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold uppercase tracking-wider text-white">Featured</span>
-          </div>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white drop-shadow-2xl leading-tight">
             {currentVideo.title}
           </h1>
