@@ -161,7 +161,7 @@ export default function HomePage() {
   const heroVideos = featuredVideos.length > 0 ? featuredVideos : videos.slice(0, 5);
 
   const mostViewedVideos = [...videos]
-    .sort((a, b) => parseInt(b.views) - parseInt(a.views))
+    .sort((a, b) => (b.views || 0) - (a.views || 0))
     .slice(0, 10);
 
   const getFilteredSubcategories = () => {
@@ -185,7 +185,14 @@ export default function HomePage() {
   };
 
   const getVideosBySubcategory = (subcategoryId: string) => {
-    const filtered = videos.filter((v) => v.subcategory_id === subcategoryId);
+    const subcategory = subcategories.find(s => s.id === subcategoryId);
+    if (!subcategory) return [];
+
+    // Filter videos by both ID and slug to support both database videos and mock videos
+    const filtered = videos.filter((v) =>
+      v.subcategory_id === subcategoryId || v.subcategory_id === subcategory.slug
+    );
+
     if (activeCategory) {
       return filtered;
     }

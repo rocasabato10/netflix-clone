@@ -9,6 +9,7 @@ export interface Video {
   subcategory_id: string;
   featured: boolean;
   created_at: string;
+  views?: number;
 }
 
 export interface Category {
