@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import Hero from '../components/Hero';
 import VideoRow from '../components/VideoRow';
 import VideoModal from '../components/VideoModal';
+import VideoDetails from '../components/VideoDetails';
 import { SubscriptionPlans } from '../components/SubscriptionPlans';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -25,6 +26,7 @@ interface Subcategory {
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [selectedVideoForDetails, setSelectedVideoForDetails] = useState<Video | null>(null);
   const [videos, setVideos] = useState<Video[]>(mockVideos);
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
@@ -212,7 +214,7 @@ export default function HomePage() {
         onSubcategorySelect={handleSubcategorySelect}
       />
 
-      {!activeCategory && <Hero videos={heroVideos} onPlayClick={setSelectedVideo} />}
+      {!activeCategory && <Hero videos={heroVideos} onPlayClick={setSelectedVideoForDetails} />}
 
       <div className={`relative z-10 pb-20 ${!activeCategory ? '-mt-24' : 'pt-32'}`}>
         {!activeCategory && mostViewedVideos.length > 0 && (
@@ -220,6 +222,7 @@ export default function HomePage() {
             title="Top 10 in Italy"
             videos={mostViewedVideos}
             onVideoClick={setSelectedVideo}
+            onInfoClick={setSelectedVideoForDetails}
             showRanking={true}
           />
         )}
@@ -233,6 +236,7 @@ export default function HomePage() {
                 title={subcategory.name}
                 videos={subcategoryVideos}
                 onVideoClick={setSelectedVideo}
+                onInfoClick={setSelectedVideoForDetails}
               />
             </div>
           );
@@ -281,6 +285,17 @@ export default function HomePage() {
         <VideoModal
           video={selectedVideo}
           onClose={() => setSelectedVideo(null)}
+        />
+      )}
+
+      {selectedVideoForDetails && (
+        <VideoDetails
+          video={selectedVideoForDetails}
+          onClose={() => setSelectedVideoForDetails(null)}
+          onPlay={(video) => {
+            setSelectedVideoForDetails(null);
+            setSelectedVideo(video);
+          }}
         />
       )}
     </div>

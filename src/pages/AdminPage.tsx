@@ -22,14 +22,14 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="min-h-screen">
-      <div className="bg-white shadow-md border-b border-gray-200">
+    <div className="min-h-screen bg-black">
+      <div className="bg-gray-900 shadow-md border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
+            <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
             <a
               href="/"
-              className="text-blue-600 hover:text-blue-700 font-medium"
+              className="text-blue-400 hover:text-blue-300 font-medium"
             >
               Torna al sito
             </a>
@@ -38,8 +38,8 @@ export default function AdminPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="border-b border-gray-200">
+        <div className="bg-gray-900 rounded-lg shadow-md overflow-hidden">
+          <div className="border-b border-gray-800">
             <nav className="flex -mb-px overflow-x-auto">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -51,8 +51,8 @@ export default function AdminPage() {
                       flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 whitespace-nowrap
                       ${
                         activeTab === tab.id
-                          ? 'border-blue-600 text-blue-600'
-                          : 'border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300'
+                          ? 'border-blue-500 text-blue-400'
+                          : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-600'
                       }
                     `}
                   >

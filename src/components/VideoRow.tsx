@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { useRef, useState } from 'react';
 import type { Video } from '../types';
 
@@ -6,10 +6,11 @@ interface VideoRowProps {
   title: string;
   videos: Video[];
   onVideoClick: (video: Video) => void;
+  onInfoClick: (video: Video) => void;
   showRanking?: boolean;
 }
 
-export default function VideoRow({ title, videos, onVideoClick, showRanking = false }: VideoRowProps) {
+export default function VideoRow({ title, videos, onVideoClick, onInfoClick, showRanking = false }: VideoRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(videos.length > 4);
@@ -51,12 +52,11 @@ export default function VideoRow({ title, videos, onVideoClick, showRanking = fa
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {videos.map((video, index) => (
-            <button
+            <div
               key={video.id}
-              onClick={() => onVideoClick(video)}
               className="flex-none w-72 group/item transition-all duration-300 hover:scale-110"
             >
-              <div className="relative aspect-video rounded-lg overflow-hidden shadow-xl">
+              <div className="relative aspect-video rounded-lg overflow-hidden shadow-xl cursor-pointer" onClick={() => onInfoClick(video)}>
                 {showRanking && index < 10 && (
                   <div className="absolute left-0 bottom-0 z-20 text-[180px] font-black leading-none text-transparent pointer-events-none" style={{
                     WebkitTextStroke: '3px white',
@@ -73,10 +73,17 @@ export default function VideoRow({ title, videos, onVideoClick, showRanking = fa
                   alt={video.title}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity" />
-                <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover/item:translate-y-0 transition-transform">
-                  <p className="text-white text-sm line-clamp-2">{video.description}</p>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onInfoClick(video);
+                  }}
+                  className="absolute top-2 right-2 bg-black/80 hover:bg-black text-white rounded-full p-2 opacity-0 group-hover/item:opacity-100 transition-opacity z-10"
+                  title="Maggiori informazioni"
+                >
+                  <Info className="w-5 h-5" />
+                </button>
               </div>
               <div className="mt-3 px-1">
                 <h3 className="text-white text-base font-semibold line-clamp-2 leading-tight">
@@ -92,7 +99,7 @@ export default function VideoRow({ title, videos, onVideoClick, showRanking = fa
                   )}
                 </div>
               </div>
-            </button>
+            </div>
           ))}
         </div>
 
