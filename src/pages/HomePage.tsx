@@ -164,6 +164,27 @@ export default function HomePage() {
     .sort((a, b) => (b.views || 0) - (a.views || 0))
     .slice(0, 10);
 
+  const trendingVideos = [...videos]
+    .filter(v => {
+      const uploadDate = new Date(v.created_at);
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      return uploadDate >= thirtyDaysAgo;
+    })
+    .sort((a, b) => (b.views || 0) - (a.views || 0))
+    .slice(0, 10);
+
+  const keepWatchingVideos = videos.slice(0, 1);
+  const suggestedVideos = videos.filter(v => v.subcategory_id === 'alta-moda').slice(0, 8);
+  const newReleasesVideos = [...videos]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 8);
+  const becauseYouWatchedVideos = videos.filter(v => v.subcategory_id === 'fashion-week').slice(0, 8);
+  const popularInCountryVideos = videos.filter(v => v.featured).slice(0, 8);
+  const fashionWeekHighlights = videos.filter(v => v.subcategory_id === 'fashion-week').slice(0, 8);
+  const designerSpotlight = videos.filter(v => v.subcategory_id === 'dietro-le-quinte').slice(0, 8);
+  const todaysFeaturedShow = videos.filter(v => v.subcategory_id === 'pret-a-porter').slice(0, 8);
+
   const getFilteredSubcategories = () => {
     if (!activeCategory) {
       return subcategories;
@@ -231,6 +252,87 @@ export default function HomePage() {
             onVideoClick={setSelectedVideo}
             onInfoClick={setSelectedVideoForDetails}
             showRanking={true}
+          />
+        )}
+
+        {!activeCategory && trendingVideos.length > 0 && (
+          <VideoRow
+            title="Trending Now"
+            videos={trendingVideos}
+            onVideoClick={setSelectedVideo}
+            onInfoClick={setSelectedVideoForDetails}
+          />
+        )}
+
+        {!activeCategory && keepWatchingVideos.length > 0 && (
+          <VideoRow
+            title="Keep Watching"
+            videos={keepWatchingVideos}
+            onVideoClick={setSelectedVideo}
+            onInfoClick={setSelectedVideoForDetails}
+          />
+        )}
+
+        {!activeCategory && suggestedVideos.length > 0 && (
+          <VideoRow
+            title="Suggested For You"
+            videos={suggestedVideos}
+            onVideoClick={setSelectedVideo}
+            onInfoClick={setSelectedVideoForDetails}
+          />
+        )}
+
+        {!activeCategory && newReleasesVideos.length > 0 && (
+          <VideoRow
+            title="New Releases"
+            videos={newReleasesVideos}
+            onVideoClick={setSelectedVideo}
+            onInfoClick={setSelectedVideoForDetails}
+          />
+        )}
+
+        {!activeCategory && becauseYouWatchedVideos.length > 0 && (
+          <VideoRow
+            title="Because You Watched"
+            videos={becauseYouWatchedVideos}
+            onVideoClick={setSelectedVideo}
+            onInfoClick={setSelectedVideoForDetails}
+          />
+        )}
+
+        {!activeCategory && popularInCountryVideos.length > 0 && (
+          <VideoRow
+            title="Popular in Your Country"
+            videos={popularInCountryVideos}
+            onVideoClick={setSelectedVideo}
+            onInfoClick={setSelectedVideoForDetails}
+          />
+        )}
+
+        {!activeCategory && fashionWeekHighlights.length > 0 && (
+          <VideoRow
+            title="Fashion Week Highlights"
+            videos={fashionWeekHighlights}
+            onVideoClick={setSelectedVideo}
+            onInfoClick={setSelectedVideoForDetails}
+          />
+        )}
+
+        {!activeCategory && designerSpotlight.length > 0 && (
+          <VideoRow
+            title="Designer Spotlight"
+            videos={designerSpotlight}
+            onVideoClick={setSelectedVideo}
+            onInfoClick={setSelectedVideoForDetails}
+          />
+        )}
+
+        {!activeCategory && todaysFeaturedShow.length > 0 && (
+          <VideoRow
+            title="Today's Featured Show"
+            videos={todaysFeaturedShow}
+            onVideoClick={setSelectedVideo}
+            onInfoClick={setSelectedVideoForDetails}
           />
         )}
 
