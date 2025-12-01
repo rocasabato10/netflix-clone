@@ -350,7 +350,9 @@ export default function HomePage() {
             </div>
           );
         })}
+      </div>
 
+      <div className="relative z-10 pb-20">
         <div className="px-8 mt-16">
           <div className="max-w-6xl mx-auto bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 md:p-12">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 text-center">
