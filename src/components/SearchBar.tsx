@@ -10,6 +10,7 @@ interface SearchBarProps {
 export default function SearchBar({ videos, onVideoSelect }: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const [showSearchBar, setShowSearchBar] = useState(false);
   const [results, setResults] = useState<Video[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
 
@@ -17,6 +18,7 @@ export default function SearchBar({ videos, onVideoSelect }: SearchBarProps) {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+        setShowSearchBar(false);
       }
     };
 
@@ -45,6 +47,7 @@ export default function SearchBar({ videos, onVideoSelect }: SearchBarProps) {
     setSearchTerm('');
     setResults([]);
     setIsOpen(false);
+    setShowSearchBar(false);
   };
 
   const handleClear = () => {
@@ -52,27 +55,42 @@ export default function SearchBar({ videos, onVideoSelect }: SearchBarProps) {
     setResults([]);
   };
 
+  const handleSearchIconClick = () => {
+    setShowSearchBar(true);
+    setIsOpen(true);
+  };
+
   return (
     <div ref={searchRef} className="relative w-full max-w-md">
-      <div className="relative">
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onFocus={() => setIsOpen(true)}
-          placeholder="Search videos, designers..."
-          className="w-full bg-gray-900/80 text-white placeholder-gray-400 rounded-full pl-12 pr-12 py-3 focus:outline-none focus:ring-2 focus:ring-white/50 backdrop-blur-sm transition"
-        />
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-        {searchTerm && (
-          <button
-            onClick={handleClear}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        )}
-      </div>
+      {!showSearchBar ? (
+        <button
+          onClick={handleSearchIconClick}
+          className="flex items-center justify-center w-10 h-10 bg-white bg-opacity-10 hover:bg-opacity-20 text-white rounded-full transition"
+        >
+          <Search className="w-5 h-5" />
+        </button>
+      ) : (
+        <div className="relative">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onFocus={() => setIsOpen(true)}
+            placeholder="Search videos, designers..."
+            className="w-full bg-gray-900/80 text-white placeholder-gray-400 rounded-full pl-12 pr-12 py-3 focus:outline-none focus:ring-2 focus:ring-white/50 backdrop-blur-sm transition"
+            autoFocus
+          />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          {searchTerm && (
+            <button
+              onClick={handleClear}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+      )}
 
       {isOpen && searchTerm && (
         <div className="absolute top-full mt-2 w-full bg-gray-900 rounded-lg shadow-2xl max-h-96 overflow-y-auto z-50 border border-gray-800">
