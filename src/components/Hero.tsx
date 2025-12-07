@@ -41,7 +41,7 @@ export default function Hero({ videos, onPlayClick }: HeroProps) {
   const currentVideo = videos[currentIndex];
 
   return (
-    <div className="relative h-[90vh] w-full overflow-hidden">
+    <div className="relative h-[95vh] w-full overflow-hidden">
       {videos.map((video, index) => (
         <div
           key={video.id}
@@ -52,7 +52,7 @@ export default function Hero({ videos, onPlayClick }: HeroProps) {
           <img
             src={video.thumbnail_url}
             alt={video.title}
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-[center_20%]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/30" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
