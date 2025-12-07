@@ -41,7 +41,7 @@ export default function Hero({ videos, onPlayClick }: HeroProps) {
   const currentVideo = videos[currentIndex];
 
   return (
-    <div className="relative h-[90vh] w-full overflow-hidden">
+    <div className="relative h-[90vh] w-full overflow-hidden bg-black">
       {videos.map((video, index) => (
         <div
           key={video.id}
@@ -49,11 +49,13 @@ export default function Hero({ videos, onPlayClick }: HeroProps) {
             index === currentIndex ? 'opacity-100' : 'opacity-0'
           }`}
         >
-          <img
-            src={video.thumbnail_url}
-            alt={video.title}
-            className="w-full h-full object-contain"
-          />
+          <div className="w-full h-full flex items-center justify-center bg-black">
+            <img
+              src={video.thumbnail_url}
+              alt={video.title}
+              className="max-w-full max-h-full object-contain"
+            />
+          </div>
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/30" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
         </div>
