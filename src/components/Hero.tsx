@@ -52,7 +52,7 @@ export default function Hero({ videos, onPlayClick }: HeroProps) {
           <img
             src={video.thumbnail_url}
             alt={video.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/30" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
