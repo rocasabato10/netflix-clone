@@ -7,6 +7,7 @@ import VideoRow from '../components/VideoRow';
 import VideoModal from '../components/VideoModal';
 import VideoDetails from '../components/VideoDetails';
 import { SubscriptionPlans } from '../components/SubscriptionPlans';
+import Footer from '../components/Footer';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -409,6 +410,8 @@ export default function HomePage() {
           }}
         />
       )}
+
+      <Footer />
     </div>
   );
 }
