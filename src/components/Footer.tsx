@@ -1,4 +1,5 @@
 import { Instagram, Facebook, Twitter, Mail } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -22,24 +23,24 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">ModaFlicks</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                <Link to="/about" className="text-gray-400 hover:text-white transition text-sm">
                   Chi Siamo
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                <Link to="/careers" className="text-gray-400 hover:text-white transition text-sm">
                   Lavora Con Noi
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                <Link to="/contact" className="text-gray-400 hover:text-white transition text-sm">
                   Press
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                <Link to="/contact" className="text-gray-400 hover:text-white transition text-sm">
                   Partnership
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -48,24 +49,24 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Supporto</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                <Link to="/support" className="text-gray-400 hover:text-white transition text-sm">
                   Centro Assistenza
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                <Link to="/support" className="text-gray-400 hover:text-white transition text-sm">
                   FAQ
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                <Link to="/contact" className="text-gray-400 hover:text-white transition text-sm">
                   Contattaci
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                <Link to="/home" className="text-gray-400 hover:text-white transition text-sm">
                   Account
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -126,15 +127,15 @@ export default function Footer() {
               &copy; {currentYear} ModaFlicks. Tutti i diritti riservati.
             </p>
             <div className="flex gap-6">
-              <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+              <Link to="/privacy" className="text-gray-400 hover:text-white transition text-sm">
                 Privacy Policy
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+              </Link>
+              <Link to="/terms" className="text-gray-400 hover:text-white transition text-sm">
                 Termini di Servizio
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+              </Link>
+              <Link to="/privacy" className="text-gray-400 hover:text-white transition text-sm">
                 Cookie Policy
-              </a>
+              </Link>
             </div>
           </div>
         </div>
