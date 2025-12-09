@@ -75,7 +75,9 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Seguici</h3>
             <div className="flex gap-4 mb-4">
               <a
-                href="#"
+                href="https://www.instagram.com/modaflicks/?hl=it"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-white bg-opacity-10 hover:bg-opacity-20 flex items-center justify-center transition"
                 aria-label="Instagram"
               >
