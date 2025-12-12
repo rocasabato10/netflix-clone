@@ -8,6 +8,7 @@ import VideoModal from '../components/VideoModal';
 import VideoDetails from '../components/VideoDetails';
 import { SubscriptionPlans } from '../components/SubscriptionPlans';
 import Footer from '../components/Footer';
+import DesignerGrid from '../components/DesignerGrid';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -338,6 +339,14 @@ export default function HomePage() {
         )}
 
         {filteredSubcategories.map((subcategory) => {
+          if (subcategory.slug === 'designers') {
+            return (
+              <div key={subcategory.id} id={`subcategory-${subcategory.id}`}>
+                <DesignerGrid />
+              </div>
+            );
+          }
+
           const subcategoryVideos = getVideosBySubcategory(subcategory.id);
           if (subcategoryVideos.length === 0) return null;
           return (
