@@ -1,4 +1,4 @@
-import { X } from 'lucide-react';
+import { X, ArrowLeft } from 'lucide-react';
 import { Designer } from '../types';
 
 interface DesignersModalProps {
@@ -14,6 +14,11 @@ export default function DesignersModal({ designers, onClose, onDesignerClick }: 
     }
   };
 
+  const handleCloseClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    onClose();
+  };
+
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-95 z-50 overflow-y-auto"
@@ -22,14 +27,24 @@ export default function DesignersModal({ designers, onClose, onDesignerClick }: 
       <div className="min-h-screen px-3 sm:px-4 py-4 sm:py-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-6 sm:mb-8 sticky top-0 bg-black bg-opacity-90 backdrop-blur-sm py-4 z-10">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
-              Fashion Designers
-            </h2>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={handleCloseClick}
+                className="p-2 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-full transition-all flex items-center justify-center"
+                title="Torna indietro"
+              >
+                <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              </button>
+              <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-white">
+                Fashion Designers
+              </h2>
+            </div>
             <button
-              onClick={onClose}
+              onClick={handleCloseClick}
               className="p-2 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-full transition-all"
+              title="Chiudi"
             >
-              <X className="w-6 h-6 text-white" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </button>
           </div>
 
