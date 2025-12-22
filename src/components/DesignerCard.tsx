@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Calendar, MapPin, Award, Palette, Building2 } from 'lucide-react';
+import { X, Calendar, MapPin, Award, Palette, Building2, ArrowLeft } from 'lucide-react';
 import { Designer, Video } from '../types';
 import { supabase } from '../lib/supabase';
 
@@ -56,17 +56,26 @@ export default function DesignerCard({ designer, onClose }: DesignerCardProps) {
       className="fixed inset-0 bg-black bg-opacity-95 z-50 overflow-y-auto"
       onClick={handleBackdropClick}
     >
-      <div className="min-h-screen px-2 sm:px-4 py-4 sm:py-8">
+      <div className="min-h-screen px-2 sm:px-4 py-20 sm:py-24">
         <div className="max-w-6xl mx-auto bg-neutral-900 rounded-lg shadow-2xl">
           <div className="relative">
             <button
               onClick={handleCloseClick}
-              className="sticky top-2 sm:absolute sm:top-4 right-2 sm:right-4 z-10 ml-auto flex p-2 bg-black bg-opacity-70 rounded-full hover:bg-opacity-90 transition-all"
+              className="absolute top-4 left-4 z-10 p-2 bg-black bg-opacity-70 rounded-full hover:bg-opacity-90 transition-all"
+              title="Torna indietro"
+            >
+              <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            </button>
+
+            <button
+              onClick={handleCloseClick}
+              className="absolute top-4 right-4 z-10 p-2 bg-black bg-opacity-70 rounded-full hover:bg-opacity-90 transition-all"
+              title="Chiudi"
             >
               <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </button>
 
-                <div className="flex flex-col md:grid md:grid-cols-3 gap-4 sm:gap-8 p-4 sm:p-8">
+            <div className="flex flex-col md:grid md:grid-cols-3 gap-4 sm:gap-8 p-4 sm:p-8 pt-16">
                   <div className="md:col-span-1">
                     <div className="md:sticky md:top-8">
                       <img
@@ -200,9 +209,9 @@ export default function DesignerCard({ designer, onClose }: DesignerCardProps) {
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
           </div>
         </div>
+      </div>
+    </div>
   );
 }
