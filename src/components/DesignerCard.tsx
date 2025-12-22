@@ -2,22 +2,19 @@ import { useState, useEffect } from 'react';
 import { X, Calendar, MapPin, Award, Palette, Building2 } from 'lucide-react';
 import { Designer, Video } from '../types';
 import { supabase } from '../lib/supabase';
-import VideoRow from './VideoRow';
 
 interface DesignerCardProps {
   designer: Designer;
+  onClose: () => void;
 }
 
-export default function DesignerCard({ designer }: DesignerCardProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function DesignerCard({ designer, onClose }: DesignerCardProps) {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
-      loadDesignerVideos();
-    }
-  }, [isOpen, designer.id]);
+    loadDesignerVideos();
+  }, [designer.id]);
 
   const loadDesignerVideos = async () => {
     setLoading(true);
@@ -43,41 +40,31 @@ export default function DesignerCard({ designer }: DesignerCardProps) {
     return date.toLocaleDateString('it-IT', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
-  return (
-    <>
-      <div
-        onClick={() => setIsOpen(true)}
-        className="group cursor-pointer bg-neutral-900 rounded-lg overflow-hidden hover:ring-2 hover:ring-amber-500 transition-all duration-300"
-      >
-        <div className="aspect-[3/4] overflow-hidden">
-          <img
-            src={designer.photo_url || 'https://images.pexels.com/photos/1126993/pexels-photo-1126993.jpeg'}
-            alt={designer.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        </div>
-        <div className="p-2 sm:p-4">
-          <h3 className="text-sm sm:text-lg md:text-xl font-semibold text-white mb-1 line-clamp-2">{designer.name}</h3>
-          {designer.birth_place && (
-            <p className="text-xs sm:text-sm text-neutral-400 line-clamp-1">{designer.birth_place}</p>
-          )}
-          {designer.brands && designer.brands.length > 0 && (
-            <p className="text-xs text-amber-500 mt-1 sm:mt-2 line-clamp-1">{designer.brands[0]}</p>
-          )}
-        </div>
-      </div>
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
 
-{isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-95 z-50 overflow-y-auto">
-          <div className="min-h-screen px-2 sm:px-4 py-4 sm:py-8">
-            <div className="max-w-6xl mx-auto bg-neutral-900 rounded-lg shadow-2xl">
-              <div className="relative">
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="sticky top-2 sm:absolute sm:top-4 right-2 sm:right-4 z-10 ml-auto flex p-2 bg-black bg-opacity-70 rounded-full hover:bg-opacity-90 transition-all"
-                >
-                  <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                </button>
+  const handleCloseClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    onClose();
+  };
+
+  return (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-95 z-50 overflow-y-auto"
+      onClick={handleBackdropClick}
+    >
+      <div className="min-h-screen px-2 sm:px-4 py-4 sm:py-8">
+        <div className="max-w-6xl mx-auto bg-neutral-900 rounded-lg shadow-2xl">
+          <div className="relative">
+            <button
+              onClick={handleCloseClick}
+              className="sticky top-2 sm:absolute sm:top-4 right-2 sm:right-4 z-10 ml-auto flex p-2 bg-black bg-opacity-70 rounded-full hover:bg-opacity-90 transition-all"
+            >
+              <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            </button>
 
                 <div className="flex flex-col md:grid md:grid-cols-3 gap-4 sm:gap-8 p-4 sm:p-8">
                   <div className="md:col-span-1">
@@ -217,7 +204,5 @@ export default function DesignerCard({ designer }: DesignerCardProps) {
             </div>
           </div>
         </div>
-      )}
-    </>
   );
 }
