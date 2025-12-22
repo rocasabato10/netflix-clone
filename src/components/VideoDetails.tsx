@@ -1,4 +1,4 @@
-import { X, Play, Plus, ThumbsUp, Check } from 'lucide-react';
+import { X, Play, Plus, ThumbsUp, Check, ArrowLeft } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import type { Video } from '../types';
 import { supabase } from '../lib/supabase';
@@ -136,14 +136,24 @@ export default function VideoDetails({ video, onClose, onPlay }: VideoDetailsPro
   if (!video) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4 overflow-y-auto">
-      <div className="relative w-full max-w-5xl bg-black rounded-lg overflow-hidden shadow-2xl my-8">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-20 bg-black/80 hover:bg-black text-white rounded-full p-2 transition"
-        >
-          <X className="w-6 h-6" />
-        </button>
+    <div className="fixed inset-0 z-50 bg-black/95 overflow-y-auto">
+      <div className="min-h-screen flex items-start justify-center p-4 pt-8 sm:pt-12">
+        <div className="relative w-full max-w-5xl bg-black rounded-lg overflow-hidden shadow-2xl">
+          <button
+            onClick={onClose}
+            className="absolute top-4 left-4 z-20 bg-black/80 hover:bg-black text-white rounded-full p-2 transition"
+            title="Torna indietro"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </button>
+
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 z-20 bg-black/80 hover:bg-black text-white rounded-full p-2 transition"
+            title="Chiudi"
+          >
+            <X className="w-6 h-6" />
+          </button>
 
         <div className="relative aspect-video bg-gray-900">
           <img
@@ -227,6 +237,7 @@ export default function VideoDetails({ video, onClose, onPlay }: VideoDetailsPro
               </p>
             </div>
           )}
+        </div>
         </div>
       </div>
     </div>
