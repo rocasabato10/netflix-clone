@@ -247,13 +247,12 @@ export default function HomePage() {
       {!activeCategory && <Hero videos={heroVideos} onPlayClick={setSelectedVideoForDetails} />}
 
       <div className={`relative z-10 pb-20 ${!activeCategory ? '-mt-24' : 'pt-32'}`}>
-        {!activeCategory && mostViewedVideos.length > 0 && (
+        {!activeCategory && newReleasesVideos.length > 0 && (
           <VideoRow
-            title="Top 10 in Italy"
-            videos={mostViewedVideos}
+            title="New Releases"
+            videos={newReleasesVideos}
             onVideoClick={setSelectedVideo}
             onInfoClick={setSelectedVideoForDetails}
-            showRanking={true}
           />
         )}
 
@@ -261,6 +260,15 @@ export default function HomePage() {
           <VideoRow
             title="Trending Now"
             videos={trendingVideos}
+            onVideoClick={setSelectedVideo}
+            onInfoClick={setSelectedVideoForDetails}
+          />
+        )}
+
+        {!activeCategory && fashionWeekHighlights.length > 0 && (
+          <VideoRow
+            title="Fashion Week Highlights"
+            videos={fashionWeekHighlights}
             onVideoClick={setSelectedVideo}
             onInfoClick={setSelectedVideoForDetails}
           />
@@ -284,15 +292,6 @@ export default function HomePage() {
           />
         )}
 
-        {!activeCategory && newReleasesVideos.length > 0 && (
-          <VideoRow
-            title="New Releases"
-            videos={newReleasesVideos}
-            onVideoClick={setSelectedVideo}
-            onInfoClick={setSelectedVideoForDetails}
-          />
-        )}
-
         {!activeCategory && becauseYouWatchedVideos.length > 0 && (
           <VideoRow
             title="Because You Watched"
@@ -306,15 +305,6 @@ export default function HomePage() {
           <VideoRow
             title="Popular in Your Country"
             videos={popularInCountryVideos}
-            onVideoClick={setSelectedVideo}
-            onInfoClick={setSelectedVideoForDetails}
-          />
-        )}
-
-        {!activeCategory && fashionWeekHighlights.length > 0 && (
-          <VideoRow
-            title="Fashion Week Highlights"
-            videos={fashionWeekHighlights}
             onVideoClick={setSelectedVideo}
             onInfoClick={setSelectedVideoForDetails}
           />
