@@ -137,22 +137,22 @@ export default function VideoDetails({ video, onClose, onPlay }: VideoDetailsPro
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 overflow-y-auto">
-      <div className="min-h-screen flex items-start justify-center p-4 pt-8 sm:pt-12">
+      <div className="min-h-screen flex items-start justify-center p-2 sm:p-4 pt-4 sm:pt-8 md:pt-12">
         <div className="relative w-full max-w-5xl bg-black rounded-lg overflow-hidden shadow-2xl">
           <button
             onClick={onClose}
-            className="absolute top-4 left-4 z-20 bg-black/80 hover:bg-black text-white rounded-full p-2 transition"
+            className="absolute top-2 left-2 sm:top-4 sm:left-4 z-20 bg-black/80 hover:bg-black text-white rounded-full p-2 transition"
             title="Torna indietro"
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
 
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-20 bg-black/80 hover:bg-black text-white rounded-full p-2 transition"
+            className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 bg-black/80 hover:bg-black text-white rounded-full p-2 transition"
             title="Chiudi"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
 
         <div className="relative aspect-video bg-gray-900">
@@ -163,16 +163,16 @@ export default function VideoDetails({ video, onClose, onPlay }: VideoDetailsPro
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
 
-          <div className="absolute bottom-0 left-0 right-0 p-8 space-y-4">
-            <h2 className="text-4xl font-bold text-white drop-shadow-lg">{video.title}</h2>
+          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 space-y-2 sm:space-y-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-lg">{video.title}</h2>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <button
                 onClick={() => onPlay(video)}
-                className="flex items-center gap-2 bg-white hover:bg-gray-200 text-black font-semibold px-8 py-3 rounded-md transition"
+                className="flex items-center gap-1 sm:gap-2 bg-white hover:bg-gray-200 text-black font-semibold px-4 sm:px-8 py-2 sm:py-3 rounded-md transition text-sm sm:text-base"
               >
-                <Play className="w-6 h-6 fill-current" />
-                <span className="text-lg">Play</span>
+                <Play className="w-4 h-4 sm:w-6 sm:h-6 fill-current" />
+                <span className="sm:text-lg">Play</span>
               </button>
 
               {user && (
@@ -180,23 +180,23 @@ export default function VideoDetails({ video, onClose, onPlay }: VideoDetailsPro
                   <button
                     onClick={toggleList}
                     disabled={loading}
-                    className="flex items-center justify-center bg-gray-800/90 hover:bg-gray-700 text-white w-12 h-12 rounded-full border-2 border-gray-500 transition disabled:opacity-50"
+                    className="flex items-center justify-center bg-gray-800/90 hover:bg-gray-700 text-white w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-gray-500 transition disabled:opacity-50"
                     title={isInList ? "Rimuovi dalla mia lista" : "Aggiungi alla mia lista"}
                   >
-                    {isInList ? <Check className="w-6 h-6" /> : <Plus className="w-6 h-6" />}
+                    {isInList ? <Check className="w-5 h-5 sm:w-6 sm:h-6" /> : <Plus className="w-5 h-5 sm:w-6 sm:h-6" />}
                   </button>
 
                   <button
                     onClick={toggleLike}
                     disabled={loading}
-                    className={`flex items-center justify-center w-12 h-12 rounded-full border-2 transition disabled:opacity-50 ${
+                    className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 transition disabled:opacity-50 ${
                       isLiked
                         ? 'bg-blue-600 border-blue-500 text-white'
                         : 'bg-gray-800/90 hover:bg-gray-700 text-white border-gray-500'
                     }`}
                     title={isLiked ? "Rimuovi mi piace" : "Mi piace"}
                   >
-                    <ThumbsUp className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+                    <ThumbsUp className={`w-4 h-4 sm:w-5 sm:h-5 ${isLiked ? 'fill-current' : ''}`} />
                   </button>
                 </>
               )}
@@ -204,10 +204,10 @@ export default function VideoDetails({ video, onClose, onPlay }: VideoDetailsPro
           </div>
         </div>
 
-        <div className="p-8 space-y-6">
-          <div className="flex items-center gap-4 text-white">
+        <div className="p-4 sm:p-8 space-y-4 sm:space-y-6">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-white text-sm sm:text-base">
             {video.year && (
-              <span className="text-lg font-semibold text-green-400">{video.year}</span>
+              <span className="text-base sm:text-lg font-semibold text-green-400">{video.year}</span>
             )}
             {video.duration > 0 && (
               <span className="text-gray-400">
@@ -215,8 +215,8 @@ export default function VideoDetails({ video, onClose, onPlay }: VideoDetailsPro
               </span>
             )}
             {likesCount > 0 && (
-              <div className="flex items-center gap-2 text-gray-400">
-                <ThumbsUp className="w-4 h-4" />
+              <div className="flex items-center gap-1 sm:gap-2 text-gray-400">
+                <ThumbsUp className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>{likesCount} {likesCount === 1 ? 'mi piace' : 'mi piace'}</span>
               </div>
             )}
@@ -224,15 +224,15 @@ export default function VideoDetails({ video, onClose, onPlay }: VideoDetailsPro
 
           {video.description && (
             <div>
-              <p className="text-gray-300 text-lg leading-relaxed">
+              <p className="text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed">
                 {video.description}
               </p>
             </div>
           )}
 
           {!user && (
-            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
-              <p className="text-gray-400 text-sm">
+            <div className="bg-gray-900 border border-gray-800 rounded-lg p-3 sm:p-4">
+              <p className="text-gray-400 text-xs sm:text-sm">
                 Accedi per aggiungere questo contenuto alla tua lista e mettere mi piace
               </p>
             </div>

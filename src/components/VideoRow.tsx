@@ -33,14 +33,14 @@ export default function VideoRow({ title, videos, onVideoClick, onInfoClick, sho
   if (videos.length === 0) return null;
 
   return (
-    <div className="px-8 md:px-16 py-8 group">
-      <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 tracking-tight">{title}</h2>
+    <div className="px-4 sm:px-8 md:px-16 py-6 sm:py-8 group">
+      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6 tracking-tight">{title}</h2>
 
       <div className="relative">
         {showLeftArrow && (
           <button
             onClick={() => scroll('left')}
-            className="absolute left-0 top-0 bottom-0 z-10 w-12 bg-black/80 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-black/90"
+            className="hidden md:flex absolute left-0 top-0 bottom-0 z-10 w-12 bg-black/80 text-white opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center hover:bg-black/90"
           >
             <ChevronLeft className="w-8 h-8" />
           </button>
@@ -48,13 +48,13 @@ export default function VideoRow({ title, videos, onVideoClick, onInfoClick, sho
 
         <div
           ref={rowRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
+          className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide scroll-smooth -mx-4 sm:mx-0 px-4 sm:px-0"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {videos.map((video, index) => (
             <div
               key={video.id}
-              className="flex-none w-72 group/item transition-all duration-300 hover:scale-110"
+              className="flex-none w-56 sm:w-64 md:w-72 group/item transition-all duration-300 md:hover:scale-110"
             >
               <div className="relative aspect-video rounded-lg overflow-hidden shadow-xl cursor-pointer" onClick={() => onInfoClick(video)}>
                 {showRanking && index < 10 && (
@@ -73,16 +73,16 @@ export default function VideoRow({ title, videos, onVideoClick, onInfoClick, sho
                   alt={video.title}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 md:group-hover/item:opacity-100 transition-opacity" />
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     onInfoClick(video);
                   }}
-                  className="absolute top-2 right-2 bg-black/80 hover:bg-black text-white rounded-full p-2 opacity-0 group-hover/item:opacity-100 transition-opacity z-10"
+                  className="absolute top-2 right-2 bg-black/80 hover:bg-black text-white rounded-full p-2 opacity-100 md:opacity-0 md:group-hover/item:opacity-100 transition-opacity z-10"
                   title="Maggiori informazioni"
                 >
-                  <Info className="w-5 h-5" />
+                  <Info className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
               <div className="mt-3 px-1">
@@ -106,7 +106,7 @@ export default function VideoRow({ title, videos, onVideoClick, onInfoClick, sho
         {showRightArrow && (
           <button
             onClick={() => scroll('right')}
-            className="absolute right-0 top-0 bottom-0 z-10 w-12 bg-black/80 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-black/90"
+            className="hidden md:flex absolute right-0 top-0 bottom-0 z-10 w-12 bg-black/80 text-white opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center hover:bg-black/90"
           >
             <ChevronRight className="w-8 h-8" />
           </button>

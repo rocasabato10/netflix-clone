@@ -32,12 +32,12 @@ export default function DesignerRow({ title, designers, onDesignerClick, onViewA
   if (designers.length === 0) return null;
 
   return (
-    <div className="px-8 md:px-16 py-8 group">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">{title}</h2>
+    <div className="px-4 sm:px-8 md:px-16 py-6 sm:py-8 group">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight">{title}</h2>
         <button
           onClick={onViewAll}
-          className="text-amber-500 hover:text-amber-400 font-semibold text-sm md:text-base transition-colors"
+          className="text-amber-500 hover:text-amber-400 font-semibold text-xs sm:text-sm md:text-base transition-colors"
         >
           View All →
         </button>
@@ -47,7 +47,7 @@ export default function DesignerRow({ title, designers, onDesignerClick, onViewA
         {showLeftArrow && (
           <button
             onClick={() => scroll('left')}
-            className="absolute left-0 top-0 bottom-0 z-10 w-12 bg-black/80 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-black/90"
+            className="hidden md:flex absolute left-0 top-0 bottom-0 z-10 w-12 bg-black/80 text-white opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center hover:bg-black/90"
           >
             <ChevronLeft className="w-8 h-8" />
           </button>
@@ -55,20 +55,20 @@ export default function DesignerRow({ title, designers, onDesignerClick, onViewA
 
         <div
           ref={rowRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
+          className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide scroll-smooth -mx-4 sm:mx-0 px-4 sm:px-0"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {designers.map((designer) => (
             <div
               key={designer.id}
               onClick={() => onDesignerClick(designer)}
-              className="flex-none w-48 md:w-56 cursor-pointer group/item transition-all duration-300 hover:scale-105"
+              className="flex-none w-40 sm:w-48 md:w-56 cursor-pointer group/item transition-all duration-300 md:hover:scale-105"
             >
               <div className="aspect-[3/4] rounded-lg overflow-hidden shadow-xl bg-neutral-900">
                 <img
                   src={designer.photo_url || 'https://images.pexels.com/photos/1126993/pexels-photo-1126993.jpeg'}
                   alt={designer.name}
-                  className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-cover md:group-hover/item:scale-110 transition-transform duration-500"
                 />
               </div>
               <div className="mt-3 px-1">
@@ -93,7 +93,7 @@ export default function DesignerRow({ title, designers, onDesignerClick, onViewA
         {showRightArrow && (
           <button
             onClick={() => scroll('right')}
-            className="absolute right-0 top-0 bottom-0 z-10 w-12 bg-black/80 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-black/90"
+            className="hidden md:flex absolute right-0 top-0 bottom-0 z-10 w-12 bg-black/80 text-white opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center hover:bg-black/90"
           >
             <ChevronRight className="w-8 h-8" />
           </button>

@@ -165,7 +165,13 @@ export default function Header({
 
           <div className="flex items-center gap-2 sm:gap-4">
             <div className="flex-1 max-w-xl hidden md:block">
-              <SearchBar videos={videos} onVideoSelect={onVideoSelect} />
+              <SearchBar
+                videos={videos}
+                onVideoSelect={(video) => {
+                  onVideoSelect(video);
+                  setMobileMenuOpen(false);
+                }}
+              />
             </div>
 
             <button
@@ -191,11 +197,17 @@ export default function Header({
         </div>
 
       <div className="md:hidden px-3 sm:px-8 pb-3 sm:pb-4">
-        <SearchBar videos={videos} onVideoSelect={onVideoSelect} />
+        <SearchBar
+          videos={videos}
+          onVideoSelect={(video) => {
+            onVideoSelect(video);
+            setMobileMenuOpen(false);
+          }}
+        />
       </div>
 
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 top-[140px] bg-black bg-opacity-98 z-40 overflow-y-auto">
+        <div className="lg:hidden fixed left-0 right-0 top-[120px] sm:top-[140px] bottom-0 bg-black bg-opacity-98 z-40 overflow-y-auto">
           <nav className="flex flex-col px-4 py-6">
             <button
               onClick={() => {

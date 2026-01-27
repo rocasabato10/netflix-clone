@@ -61,29 +61,29 @@ export default function Hero({ videos, onPlayClick }: HeroProps) {
 
       <button
         onClick={goToPrevious}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-black/50 hover:bg-black/80 text-white rounded-full flex items-center justify-center transition backdrop-blur-sm"
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 bg-black/50 hover:bg-black/80 text-white rounded-full flex items-center justify-center transition backdrop-blur-sm"
         aria-label="Previous slide"
       >
-        <ChevronLeft className="w-7 h-7" />
+        <ChevronLeft className="w-5 h-5 sm:w-7 sm:h-7" />
       </button>
 
       <button
         onClick={goToNext}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-black/50 hover:bg-black/80 text-white rounded-full flex items-center justify-center transition backdrop-blur-sm"
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 bg-black/50 hover:bg-black/80 text-white rounded-full flex items-center justify-center transition backdrop-blur-sm"
         aria-label="Next slide"
       >
-        <ChevronRight className="w-7 h-7" />
+        <ChevronRight className="w-5 h-5 sm:w-7 sm:h-7" />
       </button>
 
-      <div className="relative h-full flex flex-col justify-end px-8 md:px-16 pb-32 z-10">
-        <div className="max-w-3xl space-y-6">
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white drop-shadow-2xl leading-tight">
+      <div className="relative h-full flex flex-col justify-end px-4 sm:px-8 md:px-16 pb-24 sm:pb-32 z-10">
+        <div className="max-w-3xl space-y-3 sm:space-y-6">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white drop-shadow-2xl leading-tight">
             {currentVideo.title}
           </h1>
-          <p className="text-lg md:text-xl text-gray-200 drop-shadow-lg line-clamp-3 max-w-2xl">
+          <p className="text-sm sm:text-lg md:text-xl text-gray-200 drop-shadow-lg line-clamp-2 sm:line-clamp-3 max-w-2xl">
             {currentVideo.description}
           </p>
-          <div className="flex items-center gap-3 text-sm text-gray-300">
+          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-300">
             {currentVideo.year && <span className="font-medium">{currentVideo.year}</span>}
             {currentVideo.duration && (
               <>
@@ -92,19 +92,19 @@ export default function Hero({ videos, onPlayClick }: HeroProps) {
               </>
             )}
           </div>
-          <div className="flex gap-4 pt-4">
+          <div className="flex gap-2 sm:gap-4 pt-2 sm:pt-4">
             <button
               onClick={() => onPlayClick(currentVideo)}
-              className="flex items-center gap-3 bg-white text-black px-10 py-4 rounded-lg font-bold text-lg hover:bg-gray-200 transition shadow-xl"
+              className="flex items-center gap-2 sm:gap-3 bg-white text-black px-4 sm:px-10 py-2 sm:py-4 rounded-lg font-bold text-sm sm:text-lg hover:bg-gray-200 transition shadow-xl"
             >
-              <Play className="w-7 h-7 fill-current" />
+              <Play className="w-5 h-5 sm:w-7 sm:h-7 fill-current" />
               Play
             </button>
             <button
               onClick={() => onPlayClick(currentVideo)}
-              className="flex items-center gap-3 bg-gray-600/80 text-white px-10 py-4 rounded-lg font-bold text-lg hover:bg-gray-600/60 transition backdrop-blur-sm shadow-xl"
+              className="flex items-center gap-2 sm:gap-3 bg-gray-600/80 text-white px-4 sm:px-10 py-2 sm:py-4 rounded-lg font-bold text-sm sm:text-lg hover:bg-gray-600/60 transition backdrop-blur-sm shadow-xl"
             >
-              <Info className="w-7 h-7" />
+              <Info className="w-5 h-5 sm:w-7 sm:h-7" />
               More Info
             </button>
           </div>
