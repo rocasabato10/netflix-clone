@@ -258,7 +258,7 @@ export default function HomePage() {
 
         {!activeCategory && trendingVideos.length > 0 && (
           <VideoRow
-            title="Trending Now"
+            title="On Top"
             videos={trendingVideos}
             onVideoClick={setSelectedVideo}
             onInfoClick={setSelectedVideoForDetails}
@@ -267,7 +267,7 @@ export default function HomePage() {
 
         {!activeCategory && fashionWeekHighlights.length > 0 && (
           <VideoRow
-            title="Fashion Week Highlights"
+            title="Fashion Week"
             videos={fashionWeekHighlights}
             onVideoClick={setSelectedVideo}
             onInfoClick={setSelectedVideoForDetails}
