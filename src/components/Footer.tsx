@@ -20,7 +20,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-white font-semibold mb-4">ModaFlicks</h3>
+            <h3 className="text-white font-semibold mb-4">ModaFlicks®</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/about" className="text-gray-400 hover:text-white transition text-sm">
@@ -126,7 +126,7 @@ export default function Footer() {
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-400 text-sm">
-              &copy; {currentYear} ModaFlicks. Tutti i diritti riservati.
+              &copy; {currentYear} ModaFlicks®. Tutti i diritti riservati.
             </p>
             <div className="flex gap-6">
               <Link to="/privacy" className="text-gray-400 hover:text-white transition text-sm">
