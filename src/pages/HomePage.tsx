@@ -4,6 +4,7 @@ import type { Video, Designer } from '../types';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import VideoRow from '../components/VideoRow';
+import KeepWatchingRow from '../components/KeepWatchingRow';
 import VideoModal from '../components/VideoModal';
 import VideoDetails from '../components/VideoDetails';
 import { SubscriptionPlans } from '../components/SubscriptionPlans';
@@ -30,6 +31,11 @@ interface Subcategory {
   display_order?: number;
 }
 
+interface WatchHistoryVideo extends Video {
+  progress_seconds: number;
+  last_watched_at: string;
+}
+
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
@@ -41,6 +47,7 @@ export default function HomePage() {
   const [selectedDesigner, setSelectedDesigner] = useState<Designer | null>(null);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
+  const [watchHistory, setWatchHistory] = useState<WatchHistoryVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [userSubscription, setUserSubscription] = useState<string>('free');
   const { user } = useAuth();
@@ -53,8 +60,15 @@ export default function HomePage() {
     fetchCollections();
     if (user) {
       fetchUserSubscription();
+      fetchWatchHistory();
     }
   }, [user]);
+
+  useEffect(() => {
+    if (user && !selectedVideo) {
+      fetchWatchHistory();
+    }
+  }, [selectedVideo, user]);
 
   const fetchCategories = async () => {
     try {
@@ -168,6 +182,8 @@ export default function HomePage() {
           brands: designer.brands || [],
           achievements: designer.achievements || [],
           signature_style: designer.signature_style,
+          created_at: designer.created_at,
+          updated_at: designer.updated_at,
         }));
         setDesigners(mappedDesigners);
       }
@@ -189,6 +205,75 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error('Error fetching collections:', error);
+    }
+  };
+
+  const fetchWatchHistory = async () => {
+    if (!user) return;
+
+    try {
+      const { data: historyData, error } = await supabase
+        .from('watch_history')
+        .select('video_id, progress_seconds, last_watched_at')
+        .eq('user_id', user.id)
+        .eq('is_completed', false)
+        .order('last_watched_at', { ascending: false })
+        .limit(10);
+
+      if (error) {
+        console.error('Error fetching watch history:', error);
+        return;
+      }
+
+      if (!historyData || historyData.length === 0) {
+        setWatchHistory([]);
+        return;
+      }
+
+      const videoIds = historyData.map(h => h.video_id);
+      const { data: videosData, error: videosError } = await supabase
+        .from('videos')
+        .select('*')
+        .in('id', videoIds);
+
+      if (videosError) {
+        console.error('Error fetching videos for watch history:', videosError);
+        return;
+      }
+
+      const historyVideos: WatchHistoryVideo[] = historyData
+        .map(history => {
+          const video = videosData?.find(v => v.id === history.video_id);
+          if (!video) return null;
+
+          const durationMatch = video.duration?.match(/(\d+):(\d+)/);
+          let durationInSeconds = 0;
+          if (durationMatch) {
+            const minutes = parseInt(durationMatch[1]);
+            const seconds = parseInt(durationMatch[2]);
+            durationInSeconds = (minutes * 60) + seconds;
+          }
+
+          return {
+            id: video.id,
+            title: video.title,
+            description: video.description,
+            thumbnail_url: video.thumbnail_url,
+            video_url: video.video_url,
+            duration: durationInSeconds,
+            year: video.year || 2025,
+            subcategory_id: video.subcategory_id || 'general',
+            featured: video.views > 30000,
+            created_at: video.upload_date,
+            progress_seconds: history.progress_seconds,
+            last_watched_at: history.last_watched_at,
+          };
+        })
+        .filter((v): v is WatchHistoryVideo => v !== null);
+
+      setWatchHistory(historyVideos);
+    } catch (error) {
+      console.error('Error fetching watch history:', error);
     }
   };
 
@@ -282,6 +367,15 @@ export default function HomePage() {
       {!activeCategory && <Hero />}
 
       <div className={`relative z-10 pb-20 ${!activeCategory ? 'mt-0' : 'pt-32'}`}>
+        {user && watchHistory.length > 0 && (
+          <KeepWatchingRow
+            title="Continua a guardare"
+            videos={watchHistory}
+            onVideoClick={setSelectedVideo}
+            onInfoClick={setSelectedVideoForDetails}
+          />
+        )}
+
         {filteredSubcategories.map((subcategory) => {
           if (subcategory.slug === 'designers') {
             return (

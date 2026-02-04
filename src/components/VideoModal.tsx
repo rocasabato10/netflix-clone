@@ -1,5 +1,8 @@
 import { X } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 import type { Video } from '../types';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 
 interface VideoModalProps {
   video: Video | null;
@@ -7,6 +10,85 @@ interface VideoModalProps {
 }
 
 export default function VideoModal({ video, onClose }: VideoModalProps) {
+  const { user } = useAuth();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const lastSavedProgress = useRef<number>(0);
+
+  useEffect(() => {
+    if (!video || !user) return;
+
+    loadWatchProgress();
+
+    const videoElement = videoRef.current;
+    if (!videoElement) return;
+
+    const handleTimeUpdate = () => {
+      const currentTime = Math.floor(videoElement.currentTime);
+      if (currentTime - lastSavedProgress.current >= 5) {
+        saveWatchProgress(currentTime, false);
+        lastSavedProgress.current = currentTime;
+      }
+    };
+
+    const handleEnded = () => {
+      saveWatchProgress(Math.floor(videoElement.duration), true);
+    };
+
+    videoElement.addEventListener('timeupdate', handleTimeUpdate);
+    videoElement.addEventListener('ended', handleEnded);
+
+    return () => {
+      if (videoElement) {
+        const currentTime = Math.floor(videoElement.currentTime);
+        if (currentTime > 0) {
+          saveWatchProgress(currentTime, false);
+        }
+      }
+      videoElement?.removeEventListener('timeupdate', handleTimeUpdate);
+      videoElement?.removeEventListener('ended', handleEnded);
+    };
+  }, [video, user]);
+
+  const loadWatchProgress = async () => {
+    if (!video || !user) return;
+
+    try {
+      const { data } = await supabase
+        .from('watch_history')
+        .select('progress_seconds')
+        .eq('user_id', user.id)
+        .eq('video_id', video.id)
+        .maybeSingle();
+
+      if (data && videoRef.current) {
+        videoRef.current.currentTime = data.progress_seconds;
+      }
+    } catch (error) {
+      console.error('Error loading watch progress:', error);
+    }
+  };
+
+  const saveWatchProgress = async (progressSeconds: number, isCompleted: boolean) => {
+    if (!video || !user) return;
+
+    try {
+      await supabase
+        .from('watch_history')
+        .upsert({
+          user_id: user.id,
+          video_id: video.id,
+          progress_seconds: progressSeconds,
+          is_completed: isCompleted,
+          last_watched_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }, {
+          onConflict: 'user_id,video_id'
+        });
+    } catch (error) {
+      console.error('Error saving watch progress:', error);
+    }
+  };
+
   if (!video) return null;
 
   return (
@@ -21,6 +103,7 @@ export default function VideoModal({ video, onClose }: VideoModalProps) {
 
         <div className="relative aspect-video bg-gray-900">
           <video
+            ref={videoRef}
             src={video.video_url}
             className="w-full h-full"
             controls
