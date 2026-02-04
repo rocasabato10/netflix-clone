@@ -15,7 +15,7 @@ export default function VideoModal({ video, onClose }: VideoModalProps) {
   const lastSavedProgress = useRef<number>(0);
 
   useEffect(() => {
-    if (!video || !user) return;
+    if (!video) return;
 
     loadWatchProgress();
 
@@ -50,18 +50,29 @@ export default function VideoModal({ video, onClose }: VideoModalProps) {
   }, [video, user]);
 
   const loadWatchProgress = async () => {
-    if (!video || !user) return;
+    if (!video) return;
 
     try {
-      const { data } = await supabase
-        .from('watch_history')
-        .select('progress_seconds')
-        .eq('user_id', user.id)
-        .eq('video_id', video.id)
-        .maybeSingle();
+      if (user) {
+        const { data } = await supabase
+          .from('watch_history')
+          .select('progress_seconds')
+          .eq('user_id', user.id)
+          .eq('video_id', video.id)
+          .maybeSingle();
 
-      if (data && videoRef.current) {
-        videoRef.current.currentTime = data.progress_seconds;
+        if (data && videoRef.current) {
+          videoRef.current.currentTime = data.progress_seconds;
+        }
+      } else {
+        const localHistory = localStorage.getItem('watch_history');
+        if (localHistory) {
+          const history = JSON.parse(localHistory);
+          const videoHistory = history.find((h: any) => h.video_id === video.id);
+          if (videoHistory && videoRef.current && !videoHistory.is_completed) {
+            videoRef.current.currentTime = videoHistory.progress_seconds;
+          }
+        }
       }
     } catch (error) {
       console.error('Error loading watch progress:', error);
@@ -69,21 +80,43 @@ export default function VideoModal({ video, onClose }: VideoModalProps) {
   };
 
   const saveWatchProgress = async (progressSeconds: number, isCompleted: boolean) => {
-    if (!video || !user) return;
+    if (!video) return;
 
     try {
-      await supabase
-        .from('watch_history')
-        .upsert({
-          user_id: user.id,
+      if (user) {
+        await supabase
+          .from('watch_history')
+          .upsert({
+            user_id: user.id,
+            video_id: video.id,
+            progress_seconds: progressSeconds,
+            is_completed: isCompleted,
+            last_watched_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }, {
+            onConflict: 'user_id,video_id'
+          });
+      } else {
+        const localHistory = localStorage.getItem('watch_history');
+        let history = localHistory ? JSON.parse(localHistory) : [];
+
+        const existingIndex = history.findIndex((h: any) => h.video_id === video.id);
+        const newEntry = {
           video_id: video.id,
           progress_seconds: progressSeconds,
           is_completed: isCompleted,
           last_watched_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }, {
-          onConflict: 'user_id,video_id'
-        });
+        };
+
+        if (existingIndex >= 0) {
+          history[existingIndex] = newEntry;
+        } else {
+          history.unshift(newEntry);
+        }
+
+        history = history.slice(0, 10);
+        localStorage.setItem('watch_history', JSON.stringify(history));
+      }
     } catch (error) {
       console.error('Error saving watch progress:', error);
     }

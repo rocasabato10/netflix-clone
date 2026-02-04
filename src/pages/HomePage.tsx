@@ -58,14 +58,14 @@ export default function HomePage() {
     fetchVideos();
     fetchDesigners();
     fetchCollections();
+    fetchWatchHistory();
     if (user) {
       fetchUserSubscription();
-      fetchWatchHistory();
     }
   }, [user]);
 
   useEffect(() => {
-    if (user && !selectedVideo) {
+    if (!selectedVideo) {
       fetchWatchHistory();
     }
   }, [selectedVideo, user]);
@@ -209,23 +209,33 @@ export default function HomePage() {
   };
 
   const fetchWatchHistory = async () => {
-    if (!user) return;
-
     try {
-      const { data: historyData, error } = await supabase
-        .from('watch_history')
-        .select('video_id, progress_seconds, last_watched_at')
-        .eq('user_id', user.id)
-        .eq('is_completed', false)
-        .order('last_watched_at', { ascending: false })
-        .limit(10);
+      let historyData: Array<{ video_id: string; progress_seconds: number; last_watched_at: string; is_completed?: boolean }> = [];
 
-      if (error) {
-        console.error('Error fetching watch history:', error);
-        return;
+      if (user) {
+        const { data, error } = await supabase
+          .from('watch_history')
+          .select('video_id, progress_seconds, last_watched_at')
+          .eq('user_id', user.id)
+          .eq('is_completed', false)
+          .order('last_watched_at', { ascending: false })
+          .limit(10);
+
+        if (error) {
+          console.error('Error fetching watch history:', error);
+          return;
+        }
+
+        historyData = data || [];
+      } else {
+        const localHistory = localStorage.getItem('watch_history');
+        if (localHistory) {
+          const history = JSON.parse(localHistory);
+          historyData = history.filter((h: any) => !h.is_completed);
+        }
       }
 
-      if (!historyData || historyData.length === 0) {
+      if (historyData.length === 0) {
         setWatchHistory([]);
         return;
       }
@@ -369,7 +379,7 @@ export default function HomePage() {
       <div className={`relative z-10 pb-20 ${!activeCategory ? 'mt-0' : 'pt-32'}`}>
         {filteredSubcategories.map((subcategory) => {
           if (subcategory.slug === 'keep-watching') {
-            if (!user || watchHistory.length === 0) return null;
+            if (watchHistory.length === 0) return null;
             return (
               <div key={subcategory.id} id={`subcategory-${subcategory.id}`}>
                 <KeepWatchingRow
