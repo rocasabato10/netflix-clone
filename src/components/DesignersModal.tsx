@@ -36,7 +36,7 @@ export default function DesignersModal({ designers, onClose, onDesignerClick }: 
                 <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </button>
               <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-white">
-                Fashion Designers
+                Collections
               </h2>
             </div>
             <button

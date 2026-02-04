@@ -42,7 +42,7 @@ export default function DesignerGrid() {
   return (
     <>
       <DesignerRow
-        title="Fashion Designers"
+        title="Collections"
         designers={designers}
         onDesignerClick={setSelectedDesigner}
         onViewAll={() => setShowAllModal(true)}
