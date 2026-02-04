@@ -189,7 +189,11 @@ export default function HomePage() {
 
   const getFilteredSubcategories = () => {
     if (!activeCategory) {
-      return subcategories;
+      const homepageCategory = categories.find((c) => c.slug === 'homepage');
+      if (homepageCategory) {
+        return subcategories.filter((s) => s.category_id === homepageCategory.id);
+      }
+      return [];
     }
     const category = categories.find((c) => c.slug === activeCategory);
     if (!category) return [];

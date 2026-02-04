@@ -118,7 +118,7 @@ export default function Header({
               >
                 Home
               </button>
-              {categories.map((category) => {
+              {categories.filter(cat => cat.slug !== 'homepage').map((category) => {
                 const categorySubcategories = getSubcategoriesForCategory(category.id);
                 return (
                   <div
@@ -223,7 +223,7 @@ export default function Header({
               Home
             </button>
 
-            {categories.map((category) => {
+            {categories.filter(cat => cat.slug !== 'homepage').map((category) => {
               const categorySubcategories = getSubcategoriesForCategory(category.id);
               const hasSubcategories = categorySubcategories.length > 0;
               const isOpen = mobileOpenCategory === category.slug;
