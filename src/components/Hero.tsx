@@ -52,6 +52,7 @@ export default function Hero() {
         })
       );
 
+      console.log('Hero slides loaded:', slidesWithVideos.map(s => ({ title: s.title, image_position: s.image_position })));
       setSlides(slidesWithVideos);
     } catch (err) {
       console.error('Error fetching hero slides:', err);
@@ -111,7 +112,11 @@ export default function Hero() {
             alt={slide.title}
             className="w-full h-full object-cover"
             style={{ objectPosition: slide.image_position || 'center' }}
+            onLoad={() => console.log(`Image loaded: ${slide.title}, position: ${slide.image_position}`)}
           />
+          <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded text-xs font-mono">
+            Posizione: {slide.image_position || 'center'}
+          </div>
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/30" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
         </div>
