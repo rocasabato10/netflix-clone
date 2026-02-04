@@ -16,16 +16,25 @@ interface Subcategory {
   display_order?: number;
 }
 
+interface Designer {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 export default function VideoUpload() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState('');
+  const [year, setYear] = useState(new Date().getFullYear());
   const [categoryId, setCategoryId] = useState('');
   const [subcategoryId, setSubcategoryId] = useState('');
+  const [designerId, setDesignerId] = useState('');
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
+  const [designers, setDesigners] = useState<Designer[]>([]);
   const [filteredSubcategories, setFilteredSubcategories] = useState<Subcategory[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({ video: 0, thumbnail: 0 });
@@ -35,6 +44,7 @@ export default function VideoUpload() {
   useEffect(() => {
     fetchCategories();
     fetchSubcategories();
+    fetchDesigners();
   }, []);
 
   useEffect(() => {
@@ -68,6 +78,17 @@ export default function VideoUpload() {
 
     if (!error && data) {
       setSubcategories(data);
+    }
+  };
+
+  const fetchDesigners = async () => {
+    const { data, error } = await supabase
+      .from('designers')
+      .select('*')
+      .order('name');
+
+    if (!error && data) {
+      setDesigners(data);
     }
   };
 
@@ -155,8 +176,10 @@ export default function VideoUpload() {
         video_url: videoUrl,
         thumbnail_url: thumbnailUrl,
         duration,
+        year,
         category_id: categoryId || null,
         subcategory_id: subcategoryId || null,
+        designer_id: designerId || null,
         views: 0,
         upload_date: new Date().toISOString(),
       });
@@ -169,8 +192,10 @@ export default function VideoUpload() {
       setTitle('');
       setDescription('');
       setDuration('');
+      setYear(new Date().getFullYear());
       setCategoryId('');
       setSubcategoryId('');
+      setDesignerId('');
       setVideoFile(null);
       setThumbnailFile(null);
 
@@ -237,7 +262,7 @@ export default function VideoUpload() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Durata</label>
             <input
@@ -249,6 +274,35 @@ export default function VideoUpload() {
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Anno</label>
+            <input
+              type="number"
+              value={year}
+              onChange={(e) => setYear(parseInt(e.target.value))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="2024"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Designer</label>
+            <select
+              value={designerId}
+              onChange={(e) => setDesignerId(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Seleziona designer (opzionale)</option>
+              {designers.map((designer) => (
+                <option key={designer.id} value={designer.id}>
+                  {designer.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Categoria</label>
             <select
@@ -264,25 +318,25 @@ export default function VideoUpload() {
               ))}
             </select>
           </div>
-        </div>
 
-        {categoryId && filteredSubcategories.length > 0 && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Sottocategoria</label>
-            <select
-              value={subcategoryId}
-              onChange={(e) => setSubcategoryId(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Seleziona una sottocategoria</option>
-              {filteredSubcategories.map((sub) => (
-                <option key={sub.id} value={sub.id}>
-                  {sub.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+          {categoryId && filteredSubcategories.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Sottocategoria</label>
+              <select
+                value={subcategoryId}
+                onChange={(e) => setSubcategoryId(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">Seleziona una sottocategoria</option>
+                {filteredSubcategories.map((sub) => (
+                  <option key={sub.id} value={sub.id}>
+                    {sub.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, Video, Image, Users, Tag, DollarSign, List, BarChart3 } from 'lucide-react';
+import { Upload, Video, Image, Users, Tag, DollarSign, List, BarChart3, Sparkles } from 'lucide-react';
 import VideoUpload from '../components/admin/VideoUpload';
 import VideoManagement from '../components/admin/VideoManagement';
 import CategoryManagement from '../components/admin/CategoryManagement';
@@ -7,8 +7,9 @@ import SubscriptionManagement from '../components/admin/SubscriptionManagement';
 import UserManagement from '../components/admin/UserManagement';
 import Dashboard from '../components/admin/Dashboard';
 import HeroManagement from '../components/admin/HeroManagement';
+import DesignerManagement from '../components/admin/DesignerManagement';
 
-type TabType = 'dashboard' | 'upload' | 'videos' | 'hero' | 'categories' | 'subscriptions' | 'users';
+type TabType = 'dashboard' | 'upload' | 'videos' | 'hero' | 'categories' | 'designers' | 'subscriptions' | 'users';
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
@@ -19,6 +20,7 @@ export default function AdminPage() {
     { id: 'videos' as TabType, label: 'Gestione Video', icon: Video },
     { id: 'hero' as TabType, label: 'Hero Section', icon: Image },
     { id: 'categories' as TabType, label: 'Categorie', icon: Tag },
+    { id: 'designers' as TabType, label: 'Designer', icon: Sparkles },
     { id: 'subscriptions' as TabType, label: 'Abbonamenti', icon: DollarSign },
     { id: 'users' as TabType, label: 'Utenti', icon: Users },
   ];
@@ -72,6 +74,7 @@ export default function AdminPage() {
             {activeTab === 'videos' && <VideoManagement />}
             {activeTab === 'hero' && <HeroManagement />}
             {activeTab === 'categories' && <CategoryManagement />}
+            {activeTab === 'designers' && <DesignerManagement />}
             {activeTab === 'subscriptions' && <SubscriptionManagement />}
             {activeTab === 'users' && <UserManagement />}
           </div>

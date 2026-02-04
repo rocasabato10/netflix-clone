@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { videos as mockVideos } from '../mockData';
-import type { Video } from '../types';
+import type { Video, Designer } from '../types';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import VideoRow from '../components/VideoRow';
@@ -9,6 +9,8 @@ import VideoDetails from '../components/VideoDetails';
 import { SubscriptionPlans } from '../components/SubscriptionPlans';
 import Footer from '../components/Footer';
 import DesignerGrid from '../components/DesignerGrid';
+import DesignerRow from '../components/DesignerRow';
+import DesignerVideoView from '../components/DesignerVideoView';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -33,6 +35,8 @@ export default function HomePage() {
   const [videos, setVideos] = useState<Video[]>(mockVideos);
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
+  const [designers, setDesigners] = useState<Designer[]>([]);
+  const [selectedDesigner, setSelectedDesigner] = useState<Designer | null>(null);
   const [loading, setLoading] = useState(true);
   const [userSubscription, setUserSubscription] = useState<string>('free');
   const { user } = useAuth();
@@ -41,6 +45,7 @@ export default function HomePage() {
     fetchCategories();
     fetchSubcategories();
     fetchVideos();
+    fetchDesigners();
     if (user) {
       fetchUserSubscription();
     }
@@ -136,6 +141,33 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error('Error fetching subscription:', error);
+    }
+  };
+
+  const fetchDesigners = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('designers')
+        .select('*')
+        .order('name');
+
+      if (!error && data) {
+        const mappedDesigners: Designer[] = data.map((designer) => ({
+          id: designer.id,
+          name: designer.name,
+          slug: designer.slug,
+          photo_url: designer.photo_url,
+          bio: designer.bio,
+          birth_date: designer.birth_date,
+          birth_place: designer.birth_place,
+          brands: designer.brands || [],
+          achievements: designer.achievements || [],
+          signature_style: designer.signature_style,
+        }));
+        setDesigners(mappedDesigners);
+      }
+    } catch (error) {
+      console.error('Error fetching designers:', error);
     }
   };
 
@@ -238,6 +270,19 @@ export default function HomePage() {
             );
           }
 
+          if (subcategory.slug === 'runway') {
+            return (
+              <div key={subcategory.id} id={`subcategory-${subcategory.id}`}>
+                <DesignerRow
+                  title={subcategory.name}
+                  designers={designers}
+                  onDesignerClick={setSelectedDesigner}
+                  onViewAll={() => {}}
+                />
+              </div>
+            );
+          }
+
           const subcategoryVideos = getVideosBySubcategory(subcategory.id);
           return (
             <div key={subcategory.id} id={`subcategory-${subcategory.id}`}>
@@ -306,6 +351,21 @@ export default function HomePage() {
           onPlay={(video) => {
             setSelectedVideoForDetails(null);
             setSelectedVideo(video);
+          }}
+        />
+      )}
+
+      {selectedDesigner && (
+        <DesignerVideoView
+          designer={selectedDesigner}
+          onClose={() => setSelectedDesigner(null)}
+          onVideoPlay={(video) => {
+            setSelectedDesigner(null);
+            setSelectedVideo(video);
+          }}
+          onVideoInfo={(video) => {
+            setSelectedDesigner(null);
+            setSelectedVideoForDetails(video);
           }}
         />
       )}
