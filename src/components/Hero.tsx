@@ -65,7 +65,7 @@ export default function Hero() {
 
   if (loading) {
     return (
-      <div className="h-[95vh] w-full bg-gray-900 flex items-center justify-center">
+      <div className="h-[85vh] w-full bg-gray-900 flex items-center justify-center">
         <div className="text-white text-xl">Caricamento...</div>
       </div>
     );
@@ -76,7 +76,7 @@ export default function Hero() {
   const currentSlide = slides[currentIndex];
 
   return (
-    <div className="relative h-[95vh] w-full overflow-hidden">
+    <div className="relative h-[85vh] w-full overflow-hidden bg-black">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
@@ -87,7 +87,7 @@ export default function Hero() {
           <img
             src={slide.image_url}
             alt={slide.title}
-            className="w-full h-full object-cover object-[center_20%]"
+            className="w-full h-full object-contain"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/30" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
