@@ -38,6 +38,7 @@ export default function DesignerManagement() {
   const [homepageCategoryId, setHomepageCategoryId] = useState<string>('');
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [designerPhotoFile, setDesignerPhotoFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
 
@@ -131,8 +132,45 @@ export default function DesignerManagement() {
     }
   };
 
+  const handleDesignerPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const maxSize = 10485760;
+
+      if (file.size > maxSize) {
+        setUploadError(`Il file foto è troppo grande. Dimensione massima: 10MB. Il tuo file: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+        return;
+      }
+
+      setUploadError('');
+      setDesignerPhotoFile(file);
+    }
+  };
+
   const handleAddDesigner = async () => {
+    setUploading(true);
+    setUploadError('');
+
     try {
+      let photoUrl = designerForm.photo_url;
+
+      if (designerPhotoFile) {
+        const timestamp = Date.now();
+        const photoFileName = `designer_${timestamp}_${designerPhotoFile.name.replace(/\s+/g, '_')}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('thumbnails')
+          .upload(photoFileName, designerPhotoFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('thumbnails')
+          .getPublicUrl(photoFileName);
+
+        photoUrl = publicUrl;
+      }
+
       const { error } = await supabase.from('designers').insert([
         {
           name: designerForm.name,
@@ -140,27 +178,53 @@ export default function DesignerManagement() {
           bio: designerForm.bio,
           birth_date: designerForm.birth_date,
           birth_place: designerForm.birth_place,
-          photo_url: designerForm.photo_url,
+          photo_url: photoUrl,
           brands: designerForm.brands.split(',').map((b) => b.trim()),
           achievements: designerForm.achievements.split('\n').filter((a) => a.trim()),
           signature_style: designerForm.signature_style,
         },
       ]);
 
-      if (!error) {
-        fetchDesigners();
-        setIsAddingDesigner(false);
-        resetDesignerForm();
-      }
-    } catch (error) {
+      if (error) throw error;
+
+      fetchDesigners();
+      setIsAddingDesigner(false);
+      resetDesignerForm();
+      setDesignerPhotoFile(null);
+    } catch (error: any) {
       console.error('Error adding designer:', error);
+      setUploadError(error.message || 'Errore durante la creazione del designer');
+    } finally {
+      setUploading(false);
     }
   };
 
   const handleUpdateDesigner = async () => {
     if (!selectedDesigner) return;
 
+    setUploading(true);
+    setUploadError('');
+
     try {
+      let photoUrl = designerForm.photo_url;
+
+      if (designerPhotoFile) {
+        const timestamp = Date.now();
+        const photoFileName = `designer_${timestamp}_${designerPhotoFile.name.replace(/\s+/g, '_')}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('thumbnails')
+          .upload(photoFileName, designerPhotoFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('thumbnails')
+          .getPublicUrl(photoFileName);
+
+        photoUrl = publicUrl;
+      }
+
       const { error } = await supabase
         .from('designers')
         .update({
@@ -169,20 +233,24 @@ export default function DesignerManagement() {
           bio: designerForm.bio,
           birth_date: designerForm.birth_date,
           birth_place: designerForm.birth_place,
-          photo_url: designerForm.photo_url,
+          photo_url: photoUrl,
           brands: designerForm.brands.split(',').map((b) => b.trim()),
           achievements: designerForm.achievements.split('\n').filter((a) => a.trim()),
           signature_style: designerForm.signature_style,
         })
         .eq('id', selectedDesigner.id);
 
-      if (!error) {
-        fetchDesigners();
-        setIsEditingDesigner(false);
-        resetDesignerForm();
-      }
-    } catch (error) {
+      if (error) throw error;
+
+      fetchDesigners();
+      setIsEditingDesigner(false);
+      resetDesignerForm();
+      setDesignerPhotoFile(null);
+    } catch (error: any) {
       console.error('Error updating designer:', error);
+      setUploadError(error.message || 'Errore durante l\'aggiornamento del designer');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -390,12 +458,21 @@ export default function DesignerManagement() {
                   setIsAddingDesigner(false);
                   setIsEditingDesigner(false);
                   resetDesignerForm();
+                  setDesignerPhotoFile(null);
+                  setUploadError('');
                 }}
                 className="text-gray-400 hover:text-white"
+                disabled={uploading}
               >
                 <X size={24} />
               </button>
             </div>
+
+            {uploadError && (
+              <div className="mb-4 p-3 bg-red-900/50 border border-red-700 rounded text-red-200 text-sm">
+                {uploadError}
+              </div>
+            )}
 
             <div className="space-y-4">
               <input
@@ -433,13 +510,56 @@ export default function DesignerManagement() {
                 onChange={(e) => setDesignerForm({ ...designerForm, birth_place: e.target.value })}
                 className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg"
               />
-              <input
-                type="text"
-                placeholder="URL foto"
-                value={designerForm.photo_url}
-                onChange={(e) => setDesignerForm({ ...designerForm, photo_url: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg"
-              />
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Foto Designer (Max 10MB)
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleDesignerPhotoChange}
+                  className="hidden"
+                  id="designer-photo-upload"
+                  disabled={uploading}
+                />
+                <label
+                  htmlFor="designer-photo-upload"
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 border-2 border-dashed border-gray-600 rounded-lg cursor-pointer hover:border-blue-500 transition-colors"
+                >
+                  <Upload size={20} className="text-gray-400" />
+                  <span className="text-sm text-gray-300">
+                    {designerPhotoFile ? designerPhotoFile.name : (designerForm.photo_url ? 'Cambia foto' : 'Carica foto')}
+                  </span>
+                </label>
+                {designerPhotoFile && (
+                  <div className="mt-2">
+                    <img
+                      src={URL.createObjectURL(designerPhotoFile)}
+                      alt="Preview"
+                      className="w-full h-48 object-cover rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setDesignerPhotoFile(null)}
+                      className="mt-2 text-sm text-red-400 hover:text-red-300"
+                    >
+                      Rimuovi foto nuova
+                    </button>
+                  </div>
+                )}
+                {!designerPhotoFile && designerForm.photo_url && (
+                  <div className="mt-2">
+                    <img
+                      src={designerForm.photo_url}
+                      alt="Foto attuale"
+                      className="w-full h-48 object-cover rounded-lg"
+                    />
+                    <p className="mt-1 text-xs text-gray-400">Foto attuale</p>
+                  </div>
+                )}
+              </div>
+
               <input
                 type="text"
                 placeholder="Brand (separati da virgola)"
@@ -464,9 +584,17 @@ export default function DesignerManagement() {
 
               <button
                 onClick={isEditingDesigner ? handleUpdateDesigner : handleAddDesigner}
-                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+                disabled={uploading}
+                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                {isEditingDesigner ? 'Aggiorna' : 'Crea'}
+                {uploading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Caricamento...
+                  </>
+                ) : (
+                  isEditingDesigner ? 'Aggiorna' : 'Crea'
+                )}
               </button>
             </div>
           </div>
