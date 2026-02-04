@@ -239,7 +239,6 @@ export default function HomePage() {
           }
 
           const subcategoryVideos = getVideosBySubcategory(subcategory.id);
-          if (subcategoryVideos.length === 0) return null;
           return (
             <div key={subcategory.id} id={`subcategory-${subcategory.id}`}>
               <VideoRow
