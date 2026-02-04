@@ -71,13 +71,31 @@ export default function VideoUpload() {
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setVideoFile(e.target.files[0]);
+      const file = e.target.files[0];
+      const maxSize = 524288000; // 500MB in bytes
+
+      if (file.size > maxSize) {
+        setError(`Il file video è troppo grande. Dimensione massima: 500MB. Il tuo file: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+        return;
+      }
+
+      setError('');
+      setVideoFile(file);
     }
   };
 
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setThumbnailFile(e.target.files[0]);
+      const file = e.target.files[0];
+      const maxSize = 10485760; // 10MB in bytes
+
+      if (file.size > maxSize) {
+        setError(`Il file thumbnail è troppo grande. Dimensione massima: 10MB. Il tuo file: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+        return;
+      }
+
+      setError('');
+      setThumbnailFile(file);
     }
   };
 
@@ -283,6 +301,9 @@ export default function VideoUpload() {
                 </span>
               </label>
             </div>
+            <p className="mt-1 text-xs text-gray-500">
+              Dimensione massima: 500MB
+            </p>
             {videoFile && (
               <div className="mt-2 flex items-center justify-between text-sm text-gray-600">
                 <span>{(videoFile.size / (1024 * 1024)).toFixed(2)} MB</span>
@@ -320,6 +341,9 @@ export default function VideoUpload() {
                 </span>
               </label>
             </div>
+            <p className="mt-1 text-xs text-gray-500">
+              Dimensione massima: 10MB
+            </p>
             {thumbnailFile && (
               <div className="mt-2">
                 <img
