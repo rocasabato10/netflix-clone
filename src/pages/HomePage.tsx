@@ -11,6 +11,8 @@ import Footer from '../components/Footer';
 import DesignerGrid from '../components/DesignerGrid';
 import DesignerRow from '../components/DesignerRow';
 import DesignerVideoView from '../components/DesignerVideoView';
+import CollectionRow, { Collection } from '../components/CollectionRow';
+import CollectionView from '../components/CollectionView';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -37,6 +39,8 @@ export default function HomePage() {
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [designers, setDesigners] = useState<Designer[]>([]);
   const [selectedDesigner, setSelectedDesigner] = useState<Designer | null>(null);
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
   const [loading, setLoading] = useState(true);
   const [userSubscription, setUserSubscription] = useState<string>('free');
   const { user } = useAuth();
@@ -46,6 +50,7 @@ export default function HomePage() {
     fetchSubcategories();
     fetchVideos();
     fetchDesigners();
+    fetchCollections();
     if (user) {
       fetchUserSubscription();
     }
@@ -171,6 +176,22 @@ export default function HomePage() {
     }
   };
 
+  const fetchCollections = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('collections')
+        .select('*')
+        .order('display_order', { ascending: true })
+        .order('year', { ascending: false });
+
+      if (!error && data) {
+        setCollections(data);
+      }
+    } catch (error) {
+      console.error('Error fetching collections:', error);
+    }
+  };
+
   const handleSubscriptionSelect = async (planSlug: string) => {
     if (!user) return;
     try {
@@ -283,6 +304,18 @@ export default function HomePage() {
             );
           }
 
+          if (subcategory.slug === 'collections') {
+            return (
+              <div key={subcategory.id} id={`subcategory-${subcategory.id}`}>
+                <CollectionRow
+                  title={subcategory.name}
+                  collections={collections}
+                  onCollectionClick={setSelectedCollection}
+                />
+              </div>
+            );
+          }
+
           const subcategoryVideos = getVideosBySubcategory(subcategory.id);
           return (
             <div key={subcategory.id} id={`subcategory-${subcategory.id}`}>
@@ -365,6 +398,21 @@ export default function HomePage() {
           }}
           onVideoInfo={(video) => {
             setSelectedDesigner(null);
+            setSelectedVideoForDetails(video);
+          }}
+        />
+      )}
+
+      {selectedCollection && (
+        <CollectionView
+          collection={selectedCollection}
+          onClose={() => setSelectedCollection(null)}
+          onVideoPlay={(video) => {
+            setSelectedCollection(null);
+            setSelectedVideo(video);
+          }}
+          onVideoInfo={(video) => {
+            setSelectedCollection(null);
             setSelectedVideoForDetails(video);
           }}
         />
