@@ -367,16 +367,21 @@ export default function HomePage() {
       {!activeCategory && <Hero />}
 
       <div className={`relative z-10 pb-20 ${!activeCategory ? 'mt-0' : 'pt-32'}`}>
-        {user && watchHistory.length > 0 && (
-          <KeepWatchingRow
-            title="Continua a guardare"
-            videos={watchHistory}
-            onVideoClick={setSelectedVideo}
-            onInfoClick={setSelectedVideoForDetails}
-          />
-        )}
-
         {filteredSubcategories.map((subcategory) => {
+          if (subcategory.slug === 'keep-watching') {
+            if (!user || watchHistory.length === 0) return null;
+            return (
+              <div key={subcategory.id} id={`subcategory-${subcategory.id}`}>
+                <KeepWatchingRow
+                  title={subcategory.name}
+                  videos={watchHistory}
+                  onVideoClick={setSelectedVideo}
+                  onInfoClick={setSelectedVideoForDetails}
+                />
+              </div>
+            );
+          }
+
           if (subcategory.slug === 'designers') {
             return (
               <div key={subcategory.id} id={`subcategory-${subcategory.id}`}>
