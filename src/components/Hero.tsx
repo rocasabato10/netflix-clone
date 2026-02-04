@@ -87,7 +87,7 @@ export default function Hero() {
           <img
             src={slide.image_url}
             alt={slide.title}
-            className="w-full h-full object-cover object-[center_10%]"
+            className="w-full h-full object-cover object-top"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/30" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
