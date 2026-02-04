@@ -101,11 +101,9 @@ export default function Header({
               }}
               className="hover:opacity-80 transition"
             >
-              <img
-                src="/Senza titolo-1.png"
-                alt="ModaFlicks"
-                className="h-12 sm:h-16 w-auto"
-              />
+              <div className="text-white font-bold text-2xl sm:text-3xl tracking-tight">
+                <span className="text-yellow-400">MODA</span>FLICKS
+              </div>
             </button>
 
             <nav className="hidden lg:flex gap-6">
