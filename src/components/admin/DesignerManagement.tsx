@@ -185,12 +185,15 @@ export default function DesignerManagement() {
   };
 
   const handleDeleteDesigner = async (id: string) => {
-    if (!confirm('Sei sicuro di voler eliminare questo designer?')) return;
+    if (!confirm('Sei sicuro di voler eliminare questo designer? Verranno eliminati anche tutti i video associati.')) return;
 
     try {
       const { error } = await supabase.from('designers').delete().eq('id', id);
 
-      if (!error) {
+      if (error) {
+        alert(`Errore nell'eliminazione del designer: ${error.message}`);
+        console.error('Error deleting designer:', error);
+      } else {
         fetchDesigners();
         if (selectedDesigner?.id === id) {
           setSelectedDesigner(null);
@@ -198,6 +201,7 @@ export default function DesignerManagement() {
       }
     } catch (error) {
       console.error('Error deleting designer:', error);
+      alert('Errore imprevisto durante l\'eliminazione del designer');
     }
   };
 
@@ -235,11 +239,15 @@ export default function DesignerManagement() {
     try {
       const { error } = await supabase.from('videos').delete().eq('id', id);
 
-      if (!error && selectedDesigner) {
+      if (error) {
+        alert(`Errore nell'eliminazione del video: ${error.message}`);
+        console.error('Error deleting video:', error);
+      } else if (selectedDesigner) {
         fetchDesignerVideos(selectedDesigner.id);
       }
     } catch (error) {
       console.error('Error deleting video:', error);
+      alert('Errore imprevisto durante l\'eliminazione del video');
     }
   };
 
