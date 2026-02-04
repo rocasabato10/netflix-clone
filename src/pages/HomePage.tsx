@@ -213,7 +213,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-black">
       <Header
         onCategoryChange={setActiveCategory}
         categories={categories}
