@@ -65,7 +65,7 @@ export default function Hero() {
 
   if (loading) {
     return (
-      <div className="h-[60vh] w-full bg-gray-900 flex items-center justify-center">
+      <div className="h-[80vh] w-full bg-gray-900 flex items-center justify-center">
         <div className="text-white text-xl">Caricamento...</div>
       </div>
     );
@@ -76,7 +76,7 @@ export default function Hero() {
   const currentSlide = slides[currentIndex];
 
   return (
-    <div className="relative h-[60vh] w-full overflow-hidden">
+    <div className="relative h-[80vh] w-full overflow-hidden">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
