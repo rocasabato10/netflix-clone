@@ -10,9 +10,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           <div>
             <img
-              src="/Senza titolo-1.png"
+              src="/WhatsApp Image 2025-10-29 at 18.03.10.jpeg"
               alt="ModaFlicks"
-              className="h-12 w-auto mb-4"
+              className="h-10 w-auto mb-4"
             />
             <p className="text-gray-400 text-sm leading-relaxed">
               La tua destinazione premium per contenuti esclusivi di moda, sfilate e tendenze dal mondo della haute couture.

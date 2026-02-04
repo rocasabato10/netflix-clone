@@ -27,6 +27,8 @@ export default function CategoryManagement() {
   const [subcategoryName, setSubcategoryName] = useState('');
   const [subcategorySlug, setSubcategorySlug] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCategories();
@@ -39,7 +41,9 @@ export default function CategoryManagement() {
       .select('*')
       .order('name');
 
-    if (!error && data) {
+    if (error) {
+      setError(`Errore nel caricamento delle categorie: ${error.message}`);
+    } else if (data) {
       setCategories(data);
     }
   };
@@ -50,13 +54,17 @@ export default function CategoryManagement() {
       .select('*')
       .order('name');
 
-    if (!error && data) {
+    if (error) {
+      setError(`Errore nel caricamento delle sottocategorie: ${error.message}`);
+    } else if (data) {
       setSubcategories(data);
     }
   };
 
   const handleSaveCategory = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setSuccess(null);
 
     if (editingCategory) {
       const { error } = await supabase
@@ -64,24 +72,34 @@ export default function CategoryManagement() {
         .update({ name: categoryName, slug: categorySlug })
         .eq('id', editingCategory.id);
 
-      if (!error) {
+      if (error) {
+        setError(`Errore nell'aggiornamento della categoria: ${error.message}`);
+      } else {
+        setSuccess('Categoria aggiornata con successo!');
         fetchCategories();
         resetCategoryForm();
+        setTimeout(() => setSuccess(null), 3000);
       }
     } else {
       const { error } = await supabase
         .from('categories')
         .insert({ name: categoryName, slug: categorySlug });
 
-      if (!error) {
+      if (error) {
+        setError(`Errore nella creazione della categoria: ${error.message}`);
+      } else {
+        setSuccess('Categoria creata con successo!');
         fetchCategories();
         resetCategoryForm();
+        setTimeout(() => setSuccess(null), 3000);
       }
     }
   };
 
   const handleSaveSubcategory = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setSuccess(null);
 
     if (editingSubcategory) {
       const { error } = await supabase
@@ -93,9 +111,13 @@ export default function CategoryManagement() {
         })
         .eq('id', editingSubcategory.id);
 
-      if (!error) {
+      if (error) {
+        setError(`Errore nell'aggiornamento della sottocategoria: ${error.message}`);
+      } else {
+        setSuccess('Sottocategoria aggiornata con successo!');
         fetchSubcategories();
         resetSubcategoryForm();
+        setTimeout(() => setSuccess(null), 3000);
       }
     } else {
       const { error } = await supabase.from('subcategories').insert({
@@ -104,9 +126,13 @@ export default function CategoryManagement() {
         category_id: selectedCategoryId,
       });
 
-      if (!error) {
+      if (error) {
+        setError(`Errore nella creazione della sottocategoria: ${error.message}`);
+      } else {
+        setSuccess('Sottocategoria creata con successo!');
         fetchSubcategories();
         resetSubcategoryForm();
+        setTimeout(() => setSuccess(null), 3000);
       }
     }
   };
@@ -114,21 +140,35 @@ export default function CategoryManagement() {
   const handleDeleteCategory = async (id: string) => {
     if (!confirm('Sei sicuro? Verranno eliminate anche tutte le sottocategorie associate.')) return;
 
+    setError(null);
+    setSuccess(null);
+
     const { error } = await supabase.from('categories').delete().eq('id', id);
 
-    if (!error) {
+    if (error) {
+      setError(`Errore nell'eliminazione della categoria: ${error.message}`);
+    } else {
+      setSuccess('Categoria eliminata con successo!');
       fetchCategories();
       fetchSubcategories();
+      setTimeout(() => setSuccess(null), 3000);
     }
   };
 
   const handleDeleteSubcategory = async (id: string) => {
     if (!confirm('Sei sicuro di voler eliminare questa sottocategoria?')) return;
 
+    setError(null);
+    setSuccess(null);
+
     const { error } = await supabase.from('subcategories').delete().eq('id', id);
 
-    if (!error) {
+    if (error) {
+      setError(`Errore nell'eliminazione della sottocategoria: ${error.message}`);
+    } else {
+      setSuccess('Sottocategoria eliminata con successo!');
       fetchSubcategories();
+      setTimeout(() => setSuccess(null), 3000);
     }
   };
 
@@ -181,6 +221,24 @@ export default function CategoryManagement() {
 
   return (
     <div className="space-y-8">
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-center justify-between">
+          <span>{error}</span>
+          <button onClick={() => setError(null)} className="text-red-600 hover:text-red-800">
+            ✕
+          </button>
+        </div>
+      )}
+
+      {success && (
+        <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg flex items-center justify-between">
+          <span>{success}</span>
+          <button onClick={() => setSuccess(null)} className="text-green-600 hover:text-green-800">
+            ✕
+          </button>
+        </div>
+      )}
+
       <div>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Categorie</h2>
