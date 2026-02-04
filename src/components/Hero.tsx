@@ -9,6 +9,7 @@ interface HeroSlide {
   title: string;
   description: string;
   image_url: string;
+  image_position: string;
   display_order: number;
   is_active: boolean;
   video_id: string | null;
@@ -108,7 +109,8 @@ export default function Hero() {
           <img
             src={slide.image_url}
             alt={slide.title}
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover"
+            style={{ objectPosition: slide.image_position || 'center' }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/30" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />

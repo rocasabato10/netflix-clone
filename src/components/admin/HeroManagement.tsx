@@ -7,6 +7,7 @@ interface HeroSlide {
   title: string;
   description: string;
   image_url: string;
+  image_position: string;
   display_order: number;
   is_active: boolean;
   created_at: string;
@@ -22,6 +23,7 @@ export default function HeroManagement() {
     title: '',
     description: '',
     image_url: '',
+    image_position: 'top',
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -90,6 +92,7 @@ export default function HeroManagement() {
             title: formData.title,
             description: formData.description,
             image_url: imageUrl,
+            image_position: formData.image_position,
           })
           .eq('id', editingSlide.id);
 
@@ -102,6 +105,7 @@ export default function HeroManagement() {
             title: formData.title,
             description: formData.description,
             image_url: imageUrl,
+            image_position: formData.image_position,
             display_order: maxOrder + 1,
           });
 
@@ -110,7 +114,7 @@ export default function HeroManagement() {
 
       setIsModalOpen(false);
       setEditingSlide(null);
-      setFormData({ title: '', description: '', image_url: '' });
+      setFormData({ title: '', description: '', image_url: '', image_position: 'top' });
       setImageFile(null);
       fetchSlides();
     } catch (err) {
@@ -127,6 +131,7 @@ export default function HeroManagement() {
       title: slide.title,
       description: slide.description,
       image_url: slide.image_url,
+      image_position: slide.image_position || 'top',
     });
     setIsModalOpen(true);
   };
@@ -232,6 +237,7 @@ export default function HeroManagement() {
               src={slide.image_url}
               alt={slide.title}
               className="w-48 h-32 object-cover rounded"
+              style={{ objectPosition: slide.image_position || 'center' }}
             />
 
             <div className="flex-1">
@@ -246,6 +252,9 @@ export default function HeroManagement() {
                         : 'bg-gray-100 text-gray-800'
                     }`}>
                       {slide.is_active ? 'Attiva' : 'Disattivata'}
+                    </span>
+                    <span className="px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">
+                      Pos: {slide.image_position || 'center'}
                     </span>
                     <span className="text-sm text-gray-500">
                       Ordine: {slide.display_order}
@@ -355,14 +364,46 @@ export default function HeroManagement() {
 
               <div>
                 <label className="block text-sm font-medium mb-2">
+                  Posizione Immagine *
+                </label>
+                <select
+                  value={formData.image_position}
+                  onChange={(e) => setFormData({ ...formData, image_position: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                >
+                  <option value="top">Alto (consigliato per ritratti)</option>
+                  <option value="center">Centro</option>
+                  <option value="bottom">Basso</option>
+                  <option value="top left">Alto Sinistra</option>
+                  <option value="top center">Alto Centro</option>
+                  <option value="top right">Alto Destra</option>
+                  <option value="center left">Centro Sinistra</option>
+                  <option value="center center">Centro Centro</option>
+                  <option value="center right">Centro Destra</option>
+                  <option value="bottom left">Basso Sinistra</option>
+                  <option value="bottom center">Basso Centro</option>
+                  <option value="bottom right">Basso Destra</option>
+                </select>
+                <p className="text-sm text-gray-500 mt-2">
+                  Scegli quale parte dell'immagine mostrare nella hero section
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">
                   Immagine Hero *
                 </label>
                 {formData.image_url && !imageFile && (
                   <div className="mb-4">
+                    <p className="text-sm font-medium text-gray-700 mb-2">
+                      Anteprima con posizione selezionata:
+                    </p>
                     <img
                       src={formData.image_url}
                       alt="Preview"
                       className="w-full h-48 object-cover rounded-lg"
+                      style={{ objectPosition: formData.image_position }}
                     />
                   </div>
                 )}
