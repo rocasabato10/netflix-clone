@@ -17,6 +17,7 @@ interface Subcategory {
   name: string;
   slug: string;
   category_id: string;
+  display_order?: number;
 }
 
 interface HeaderProps {

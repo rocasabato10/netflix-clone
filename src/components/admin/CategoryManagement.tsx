@@ -13,6 +13,7 @@ interface Subcategory {
   name: string;
   slug: string;
   category_id: string;
+  display_order?: number;
 }
 
 export default function CategoryManagement() {
@@ -26,6 +27,7 @@ export default function CategoryManagement() {
   const [categorySlug, setCategorySlug] = useState('');
   const [subcategoryName, setSubcategoryName] = useState('');
   const [subcategorySlug, setSubcategorySlug] = useState('');
+  const [subcategoryDisplayOrder, setSubcategoryDisplayOrder] = useState<number>(0);
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -52,6 +54,7 @@ export default function CategoryManagement() {
     const { data, error } = await supabase
       .from('subcategories')
       .select('*')
+      .order('display_order', { ascending: true })
       .order('name');
 
     if (error) {
@@ -108,6 +111,7 @@ export default function CategoryManagement() {
           name: subcategoryName,
           slug: subcategorySlug,
           category_id: selectedCategoryId,
+          display_order: subcategoryDisplayOrder,
         })
         .eq('id', editingSubcategory.id);
 
@@ -124,6 +128,7 @@ export default function CategoryManagement() {
         name: subcategoryName,
         slug: subcategorySlug,
         category_id: selectedCategoryId,
+        display_order: subcategoryDisplayOrder,
       });
 
       if (error) {
@@ -182,6 +187,7 @@ export default function CategoryManagement() {
   const resetSubcategoryForm = () => {
     setSubcategoryName('');
     setSubcategorySlug('');
+    setSubcategoryDisplayOrder(0);
     setSelectedCategoryId('');
     setEditingSubcategory(null);
     setShowSubcategoryForm(false);
@@ -198,6 +204,7 @@ export default function CategoryManagement() {
     setEditingSubcategory(subcategory);
     setSubcategoryName(subcategory.name);
     setSubcategorySlug(subcategory.slug);
+    setSubcategoryDisplayOrder(subcategory.display_order || 0);
     setSelectedCategoryId(subcategory.category_id);
     setShowSubcategoryForm(true);
   };
@@ -406,6 +413,18 @@ export default function CategoryManagement() {
                   required
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Ordine di visualizzazione
+                </label>
+                <input
+                  type="number"
+                  value={subcategoryDisplayOrder}
+                  onChange={(e) => setSubcategoryDisplayOrder(parseInt(e.target.value) || 0)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  min="0"
+                />
+              </div>
               <div className="flex gap-4">
                 <button
                   type="button"
@@ -438,6 +457,11 @@ export default function CategoryManagement() {
                   <p className="text-xs text-blue-600">
                     {getCategoryName(subcategory.category_id)}
                   </p>
+                  {subcategory.display_order !== undefined && (
+                    <p className="text-xs text-gray-400 mt-1">
+                      Ordine: {subcategory.display_order}
+                    </p>
+                  )}
                 </div>
                 <div className="flex gap-1">
                   <button

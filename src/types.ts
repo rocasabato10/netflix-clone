@@ -26,8 +26,8 @@ export interface Subcategory {
   name: string;
   slug: string;
   category_id: string;
-  order: number;
-  created_at: string;
+  display_order?: number;
+  created_at?: string;
 }
 
 export interface Designer {

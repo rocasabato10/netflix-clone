@@ -13,6 +13,7 @@ interface Subcategory {
   name: string;
   slug: string;
   category_id: string;
+  display_order?: number;
 }
 
 export default function VideoUpload() {
@@ -62,6 +63,7 @@ export default function VideoUpload() {
     const { data, error } = await supabase
       .from('subcategories')
       .select('*')
+      .order('display_order', { ascending: true })
       .order('name');
 
     if (!error && data) {
