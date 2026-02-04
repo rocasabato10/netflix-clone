@@ -1,8 +1,6 @@
-import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import VideoModal from './VideoModal';
-import type { Video } from '../types';
 
 interface HeroSlide {
   id: string;
@@ -13,7 +11,6 @@ interface HeroSlide {
   display_order: number;
   is_active: boolean;
   video_id: string | null;
-  video?: Video;
 }
 
 export default function Hero() {
@@ -21,7 +18,6 @@ export default function Hero() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
   useEffect(() => {
     fetchSlides();
@@ -37,22 +33,7 @@ export default function Hero() {
 
       if (slidesError) throw slidesError;
 
-      const slidesWithVideos = await Promise.all(
-        (slidesData || []).map(async (slide) => {
-          if (slide.video_id) {
-            const { data: videoData } = await supabase
-              .from('videos')
-              .select('*')
-              .eq('id', slide.video_id)
-              .maybeSingle();
-
-            return { ...slide, video: videoData };
-          }
-          return slide;
-        })
-      );
-
-      setSlides(slidesWithVideos);
+      setSlides(slidesData || []);
     } catch (err) {
       console.error('Error fetching hero slides:', err);
     } finally {
@@ -143,15 +124,6 @@ export default function Hero() {
               {currentSlide.description}
             </p>
           )}
-          {currentSlide.video && (
-            <button
-              onClick={() => setSelectedVideo(currentSlide.video!)}
-              className="flex items-center gap-3 bg-white hover:bg-gray-100 text-black font-bold py-3 px-6 sm:py-4 sm:px-8 rounded-full transition transform hover:scale-105 shadow-xl"
-            >
-              <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-current" />
-              <span className="text-sm sm:text-base md:text-lg">Guarda il Trailer</span>
-            </button>
-          )}
         </div>
       </div>
 
@@ -169,8 +141,6 @@ export default function Hero() {
           />
         ))}
       </div>
-
-      <VideoModal video={selectedVideo} onClose={() => setSelectedVideo(null)} />
     </div>
   );
 }
