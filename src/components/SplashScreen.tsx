@@ -57,7 +57,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         muted
         playsInline
       >
-        <source src="/jiggle-modaflicks.mp4" type="video/mp4" />
+        <source src="/nuovo-jiggle.mp4" type="video/mp4" />
       </video>
 
       <button
