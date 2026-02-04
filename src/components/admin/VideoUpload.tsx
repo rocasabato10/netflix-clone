@@ -72,10 +72,10 @@ export default function VideoUpload() {
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const maxSize = 524288000; // 500MB in bytes
+      const maxSize = 2147483648; // 2GB in bytes
 
       if (file.size > maxSize) {
-        setError(`Il file video è troppo grande. Dimensione massima: 500MB. Il tuo file: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+        setError(`Il file video è troppo grande. Dimensione massima: 2GB. Il tuo file: ${(file.size / (1024 * 1024 * 1024)).toFixed(2)}GB`);
         return;
       }
 
@@ -101,11 +101,8 @@ export default function VideoUpload() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted');
     setError('');
     setSuccess(false);
-
-    console.log('Validation check:', { title, description, videoFile, thumbnailFile });
 
     if (!title || !description || !videoFile || !thumbnailFile) {
       const missingFields = [];
@@ -120,37 +117,26 @@ export default function VideoUpload() {
     setUploading(true);
 
     try {
-      console.log('Starting upload...');
       const timestamp = Date.now();
       const videoFileName = `${timestamp}_${videoFile.name.replace(/\s+/g, '_')}`;
       const thumbnailFileName = `${timestamp}_${thumbnailFile.name.replace(/\s+/g, '_')}`;
 
       setUploadProgress({ video: 0, thumbnail: 0 });
 
-      console.log('Uploading video:', videoFileName);
       const { data: videoData, error: videoError } = await supabase.storage
         .from('videos')
         .upload(videoFileName, videoFile);
 
-      if (videoError) {
-        console.error('Video upload error:', videoError);
-        throw videoError;
-      }
+      if (videoError) throw videoError;
 
-      console.log('Video uploaded successfully');
       setUploadProgress({ video: 50, thumbnail: 0 });
 
-      console.log('Uploading thumbnail:', thumbnailFileName);
       const { data: thumbnailData, error: thumbnailError } = await supabase.storage
         .from('thumbnails')
         .upload(thumbnailFileName, thumbnailFile);
 
-      if (thumbnailError) {
-        console.error('Thumbnail upload error:', thumbnailError);
-        throw thumbnailError;
-      }
+      if (thumbnailError) throw thumbnailError;
 
-      console.log('Thumbnail uploaded successfully');
       setUploadProgress({ video: 100, thumbnail: 50 });
 
       const { data: { publicUrl: videoUrl } } = supabase.storage
@@ -161,7 +147,6 @@ export default function VideoUpload() {
         .from('thumbnails')
         .getPublicUrl(thumbnailFileName);
 
-      console.log('Inserting into database...');
       const { error: insertError } = await supabase.from('videos').insert({
         title,
         description,
@@ -174,12 +159,8 @@ export default function VideoUpload() {
         upload_date: new Date().toISOString(),
       });
 
-      if (insertError) {
-        console.error('Database insert error:', insertError);
-        throw insertError;
-      }
+      if (insertError) throw insertError;
 
-      console.log('Video uploaded and saved successfully');
       setUploadProgress({ video: 100, thumbnail: 100 });
       setSuccess(true);
 
@@ -326,11 +307,16 @@ export default function VideoUpload() {
               </label>
             </div>
             <p className="mt-1 text-xs text-gray-500">
-              Dimensione massima: 500MB
+              Dimensione massima: 2GB
             </p>
             {videoFile && (
               <div className="mt-2 flex items-center justify-between text-sm text-gray-600">
-                <span>{(videoFile.size / (1024 * 1024)).toFixed(2)} MB</span>
+                <span>
+                  {videoFile.size > 1024 * 1024 * 1024
+                    ? `${(videoFile.size / (1024 * 1024 * 1024)).toFixed(2)} GB`
+                    : `${(videoFile.size / (1024 * 1024)).toFixed(2)} MB`
+                  }
+                </span>
                 <button
                   type="button"
                   onClick={() => setVideoFile(null)}
@@ -420,12 +406,6 @@ export default function VideoUpload() {
           <button
             type="submit"
             disabled={uploading}
-            onClick={(e) => {
-              console.log('Button clicked!', { uploading });
-              if (uploading) {
-                e.preventDefault();
-              }
-            }}
             className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {uploading ? (
