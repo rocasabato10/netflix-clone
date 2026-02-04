@@ -87,7 +87,7 @@ export default function Hero() {
           <img
             src={slide.image_url}
             alt={slide.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
             style={{ objectPosition: 'center top' }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/30" />
