@@ -101,37 +101,56 @@ export default function VideoUpload() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted');
     setError('');
     setSuccess(false);
 
+    console.log('Validation check:', { title, description, videoFile, thumbnailFile });
+
     if (!title || !description || !videoFile || !thumbnailFile) {
-      setError('Tutti i campi obbligatori devono essere compilati');
+      const missingFields = [];
+      if (!title) missingFields.push('titolo');
+      if (!description) missingFields.push('descrizione');
+      if (!videoFile) missingFields.push('file video');
+      if (!thumbnailFile) missingFields.push('thumbnail');
+      setError(`Campi mancanti: ${missingFields.join(', ')}`);
       return;
     }
 
     setUploading(true);
 
     try {
+      console.log('Starting upload...');
       const timestamp = Date.now();
       const videoFileName = `${timestamp}_${videoFile.name.replace(/\s+/g, '_')}`;
       const thumbnailFileName = `${timestamp}_${thumbnailFile.name.replace(/\s+/g, '_')}`;
 
       setUploadProgress({ video: 0, thumbnail: 0 });
 
+      console.log('Uploading video:', videoFileName);
       const { data: videoData, error: videoError } = await supabase.storage
         .from('videos')
         .upload(videoFileName, videoFile);
 
-      if (videoError) throw videoError;
+      if (videoError) {
+        console.error('Video upload error:', videoError);
+        throw videoError;
+      }
 
+      console.log('Video uploaded successfully');
       setUploadProgress({ video: 50, thumbnail: 0 });
 
+      console.log('Uploading thumbnail:', thumbnailFileName);
       const { data: thumbnailData, error: thumbnailError } = await supabase.storage
         .from('thumbnails')
         .upload(thumbnailFileName, thumbnailFile);
 
-      if (thumbnailError) throw thumbnailError;
+      if (thumbnailError) {
+        console.error('Thumbnail upload error:', thumbnailError);
+        throw thumbnailError;
+      }
 
+      console.log('Thumbnail uploaded successfully');
       setUploadProgress({ video: 100, thumbnail: 50 });
 
       const { data: { publicUrl: videoUrl } } = supabase.storage
@@ -142,6 +161,7 @@ export default function VideoUpload() {
         .from('thumbnails')
         .getPublicUrl(thumbnailFileName);
 
+      console.log('Inserting into database...');
       const { error: insertError } = await supabase.from('videos').insert({
         title,
         description,
@@ -154,8 +174,12 @@ export default function VideoUpload() {
         upload_date: new Date().toISOString(),
       });
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        console.error('Database insert error:', insertError);
+        throw insertError;
+      }
 
+      console.log('Video uploaded and saved successfully');
       setUploadProgress({ video: 100, thumbnail: 100 });
       setSuccess(true);
 
@@ -396,6 +420,12 @@ export default function VideoUpload() {
           <button
             type="submit"
             disabled={uploading}
+            onClick={(e) => {
+              console.log('Button clicked!', { uploading });
+              if (uploading) {
+                e.preventDefault();
+              }
+            }}
             className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {uploading ? (
