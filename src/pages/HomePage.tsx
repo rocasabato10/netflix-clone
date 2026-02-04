@@ -224,7 +224,7 @@ export default function HomePage() {
         onSubcategorySelect={handleSubcategorySelect}
       />
 
-      {!activeCategory && <Hero videos={heroVideos} onPlayClick={setSelectedVideoForDetails} />}
+      {!activeCategory && <Hero />}
 
       <div className={`relative z-10 pb-20 ${!activeCategory ? '-mt-24' : 'pt-32'}`}>
         {filteredSubcategories.map((subcategory) => {

@@ -1,34 +1,61 @@
-import { Play, Info, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import type { Video } from '../types';
+import { supabase } from '../lib/supabase';
 
-interface HeroProps {
-  videos: Video[];
-  onPlayClick: (video: Video) => void;
+interface HeroSlide {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  display_order: number;
+  is_active: boolean;
 }
 
-export default function Hero({ videos, onPlayClick }: HeroProps) {
+export default function Hero() {
+  const [slides, setSlides] = useState<HeroSlide[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isAutoPlaying || videos.length <= 1) return;
+    fetchSlides();
+  }, []);
+
+  const fetchSlides = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('hero_slides')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+
+      if (error) throw error;
+      setSlides(data || []);
+    } catch (err) {
+      console.error('Error fetching hero slides:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isAutoPlaying || slides.length <= 1) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % videos.length);
+      setCurrentIndex((prev) => (prev + 1) % slides.length);
     }, 7000);
 
     return () => clearInterval(interval);
-  }, [isAutoPlaying, videos.length]);
+  }, [isAutoPlaying, slides.length]);
 
   const goToPrevious = () => {
     setIsAutoPlaying(false);
-    setCurrentIndex((prev) => (prev - 1 + videos.length) % videos.length);
+    setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
   const goToNext = () => {
     setIsAutoPlaying(false);
-    setCurrentIndex((prev) => (prev + 1) % videos.length);
+    setCurrentIndex((prev) => (prev + 1) % slides.length);
   };
 
   const goToSlide = (index: number) => {
@@ -36,22 +63,30 @@ export default function Hero({ videos, onPlayClick }: HeroProps) {
     setCurrentIndex(index);
   };
 
-  if (videos.length === 0) return null;
+  if (loading) {
+    return (
+      <div className="h-[95vh] w-full bg-gray-900 flex items-center justify-center">
+        <div className="text-white text-xl">Caricamento...</div>
+      </div>
+    );
+  }
 
-  const currentVideo = videos[currentIndex];
+  if (slides.length === 0) return null;
+
+  const currentSlide = slides[currentIndex];
 
   return (
     <div className="relative h-[95vh] w-full overflow-hidden">
-      {videos.map((video, index) => (
+      {slides.map((slide, index) => (
         <div
-          key={video.id}
+          key={slide.id}
           className={`absolute inset-0 transition-opacity duration-1000 ${
             index === currentIndex ? 'opacity-100' : 'opacity-0'
           }`}
         >
           <img
-            src={video.thumbnail_url}
-            alt={video.title}
+            src={slide.image_url}
+            alt={slide.title}
             className="w-full h-full object-cover object-[center_20%]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/30" />
@@ -78,41 +113,18 @@ export default function Hero({ videos, onPlayClick }: HeroProps) {
       <div className="relative h-full flex flex-col justify-end px-4 sm:px-8 md:px-16 pb-24 sm:pb-32 z-10">
         <div className="max-w-3xl space-y-3 sm:space-y-6">
           <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white drop-shadow-2xl leading-tight">
-            {currentVideo.title}
+            {currentSlide.title}
           </h1>
-          <p className="text-sm sm:text-lg md:text-xl text-gray-200 drop-shadow-lg line-clamp-2 sm:line-clamp-3 max-w-2xl">
-            {currentVideo.description}
-          </p>
-          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-300">
-            {currentVideo.year && <span className="font-medium">{currentVideo.year}</span>}
-            {currentVideo.duration && (
-              <>
-                <span className="text-gray-500">•</span>
-                <span>{Math.floor(currentVideo.duration / 60)} min</span>
-              </>
-            )}
-          </div>
-          <div className="flex gap-2 sm:gap-4 pt-2 sm:pt-4">
-            <button
-              onClick={() => onPlayClick(currentVideo)}
-              className="flex items-center gap-2 sm:gap-3 bg-white text-black px-4 sm:px-10 py-2 sm:py-4 rounded-lg font-bold text-sm sm:text-lg hover:bg-gray-200 transition shadow-xl"
-            >
-              <Play className="w-5 h-5 sm:w-7 sm:h-7 fill-current" />
-              Play
-            </button>
-            <button
-              onClick={() => onPlayClick(currentVideo)}
-              className="flex items-center gap-2 sm:gap-3 bg-gray-600/80 text-white px-4 sm:px-10 py-2 sm:py-4 rounded-lg font-bold text-sm sm:text-lg hover:bg-gray-600/60 transition backdrop-blur-sm shadow-xl"
-            >
-              <Info className="w-5 h-5 sm:w-7 sm:h-7" />
-              More Info
-            </button>
-          </div>
+          {currentSlide.description && (
+            <p className="text-sm sm:text-lg md:text-xl text-gray-200 drop-shadow-lg line-clamp-2 sm:line-clamp-3 max-w-2xl">
+              {currentSlide.description}
+            </p>
+          )}
         </div>
       </div>
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-        {videos.map((_, index) => (
+        {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}

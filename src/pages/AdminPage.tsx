@@ -6,8 +6,9 @@ import CategoryManagement from '../components/admin/CategoryManagement';
 import SubscriptionManagement from '../components/admin/SubscriptionManagement';
 import UserManagement from '../components/admin/UserManagement';
 import Dashboard from '../components/admin/Dashboard';
+import HeroManagement from '../components/admin/HeroManagement';
 
-type TabType = 'dashboard' | 'upload' | 'videos' | 'categories' | 'subscriptions' | 'users';
+type TabType = 'dashboard' | 'upload' | 'videos' | 'hero' | 'categories' | 'subscriptions' | 'users';
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
@@ -16,6 +17,7 @@ export default function AdminPage() {
     { id: 'dashboard' as TabType, label: 'Dashboard', icon: BarChart3 },
     { id: 'upload' as TabType, label: 'Carica Video', icon: Upload },
     { id: 'videos' as TabType, label: 'Gestione Video', icon: Video },
+    { id: 'hero' as TabType, label: 'Hero Section', icon: Image },
     { id: 'categories' as TabType, label: 'Categorie', icon: Tag },
     { id: 'subscriptions' as TabType, label: 'Abbonamenti', icon: DollarSign },
     { id: 'users' as TabType, label: 'Utenti', icon: Users },
@@ -68,6 +70,7 @@ export default function AdminPage() {
             {activeTab === 'dashboard' && <Dashboard />}
             {activeTab === 'upload' && <VideoUpload />}
             {activeTab === 'videos' && <VideoManagement />}
+            {activeTab === 'hero' && <HeroManagement />}
             {activeTab === 'categories' && <CategoryManagement />}
             {activeTab === 'subscriptions' && <SubscriptionManagement />}
             {activeTab === 'users' && <UserManagement />}
