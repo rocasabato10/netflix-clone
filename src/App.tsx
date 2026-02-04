@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import AdminPage from './pages/AdminPage';
@@ -12,17 +12,9 @@ import { AuthProvider } from './contexts/AuthContext';
 import SplashScreen from './components/SplashScreen';
 
 function App() {
-  const [showSplash, setShowSplash] = useState(false);
-
-  useEffect(() => {
-    const hasSeenSplash = sessionStorage.getItem('hasSeenSplash');
-    if (!hasSeenSplash) {
-      setShowSplash(true);
-    }
-  }, []);
+  const [showSplash, setShowSplash] = useState(true);
 
   const handleSplashComplete = () => {
-    sessionStorage.setItem('hasSeenSplash', 'true');
     setShowSplash(false);
   };
 
