@@ -226,7 +226,7 @@ export default function HomePage() {
 
       {!activeCategory && <Hero />}
 
-      <div className={`relative z-10 pb-20 ${!activeCategory ? '-mt-24' : 'pt-32'}`}>
+      <div className={`relative z-10 pb-20 ${!activeCategory ? 'mt-0' : 'pt-32'}`}>
         {filteredSubcategories.map((subcategory) => {
           if (subcategory.slug === 'designers') {
             return (

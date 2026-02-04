@@ -65,7 +65,7 @@ export default function Hero() {
 
   if (loading) {
     return (
-      <div className="h-[95vh] w-full bg-gray-900 flex items-center justify-center">
+      <div className="h-[60vh] w-full bg-gray-900 flex items-center justify-center">
         <div className="text-white text-xl">Caricamento...</div>
       </div>
     );
@@ -76,7 +76,7 @@ export default function Hero() {
   const currentSlide = slides[currentIndex];
 
   return (
-    <div className="relative h-[95vh] w-full overflow-hidden">
+    <div className="relative h-[60vh] w-full overflow-hidden">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
@@ -110,7 +110,7 @@ export default function Hero() {
         <ChevronRight className="w-5 h-5 sm:w-7 sm:h-7" />
       </button>
 
-      <div className="relative h-full flex flex-col justify-end px-4 sm:px-8 md:px-16 pb-24 sm:pb-32 z-10">
+      <div className="relative h-full flex flex-col justify-end px-4 sm:px-8 md:px-16 pb-12 sm:pb-16 z-10">
         <div className="max-w-3xl space-y-3 sm:space-y-6">
           <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white drop-shadow-2xl leading-tight">
             {currentSlide.title}
