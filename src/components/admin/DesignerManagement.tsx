@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, X, Save } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Save, Upload } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 interface Designer {
@@ -36,6 +36,10 @@ export default function DesignerManagement() {
   const [loading, setLoading] = useState(true);
   const [runwaySubcategoryId, setRunwaySubcategoryId] = useState<string>('');
   const [homepageCategoryId, setHomepageCategoryId] = useState<string>('');
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
 
   const [designerForm, setDesignerForm] = useState({
     name: '',
@@ -52,8 +56,6 @@ export default function DesignerManagement() {
   const [videoForm, setVideoForm] = useState({
     title: '',
     description: '',
-    thumbnail_url: '',
-    video_url: '',
     duration: '',
     year: new Date().getFullYear(),
   });
@@ -205,16 +207,78 @@ export default function DesignerManagement() {
     }
   };
 
+  const handleVideoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const maxSize = 2147483648;
+
+      if (file.size > maxSize) {
+        setUploadError(`Il file video è troppo grande. Dimensione massima: 2GB. Il tuo file: ${(file.size / (1024 * 1024 * 1024)).toFixed(2)}GB`);
+        return;
+      }
+
+      setUploadError('');
+      setVideoFile(file);
+    }
+  };
+
+  const handleThumbnailFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const maxSize = 10485760;
+
+      if (file.size > maxSize) {
+        setUploadError(`Il file thumbnail è troppo grande. Dimensione massima: 10MB. Il tuo file: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+        return;
+      }
+
+      setUploadError('');
+      setThumbnailFile(file);
+    }
+  };
+
   const handleAddVideo = async () => {
     if (!selectedDesigner || !runwaySubcategoryId || !homepageCategoryId) return;
 
+    if (!videoForm.title || !videoFile || !thumbnailFile) {
+      setUploadError('Titolo, video e thumbnail sono obbligatori');
+      return;
+    }
+
+    setUploading(true);
+    setUploadError('');
+
     try {
+      const timestamp = Date.now();
+      const videoFileName = `${timestamp}_${videoFile.name.replace(/\s+/g, '_')}`;
+      const thumbnailFileName = `${timestamp}_${thumbnailFile.name.replace(/\s+/g, '_')}`;
+
+      const { data: videoData, error: videoError } = await supabase.storage
+        .from('videos')
+        .upload(videoFileName, videoFile);
+
+      if (videoError) throw videoError;
+
+      const { data: thumbnailData, error: thumbnailError } = await supabase.storage
+        .from('thumbnails')
+        .upload(thumbnailFileName, thumbnailFile);
+
+      if (thumbnailError) throw thumbnailError;
+
+      const { data: { publicUrl: videoUrl } } = supabase.storage
+        .from('videos')
+        .getPublicUrl(videoFileName);
+
+      const { data: { publicUrl: thumbnailUrl } } = supabase.storage
+        .from('thumbnails')
+        .getPublicUrl(thumbnailFileName);
+
       const { error } = await supabase.from('videos').insert([
         {
           title: videoForm.title,
           description: videoForm.description,
-          thumbnail_url: videoForm.thumbnail_url,
-          video_url: videoForm.video_url,
+          thumbnail_url: thumbnailUrl,
+          video_url: videoUrl,
           duration: videoForm.duration,
           year: videoForm.year,
           designer_id: selectedDesigner.id,
@@ -223,13 +287,18 @@ export default function DesignerManagement() {
         },
       ]);
 
-      if (!error) {
-        fetchDesignerVideos(selectedDesigner.id);
-        setIsAddingVideo(false);
-        resetVideoForm();
-      }
-    } catch (error) {
+      if (error) throw error;
+
+      fetchDesignerVideos(selectedDesigner.id);
+      setIsAddingVideo(false);
+      resetVideoForm();
+      setVideoFile(null);
+      setThumbnailFile(null);
+    } catch (error: any) {
       console.error('Error adding video:', error);
+      setUploadError(error.message || 'Errore durante il caricamento del video');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -465,9 +534,15 @@ export default function DesignerManagement() {
 
           {isAddingVideo && selectedDesigner && (
             <div className="mb-4 p-4 bg-gray-900 rounded-lg space-y-3">
+              {uploadError && (
+                <div className="p-3 bg-red-900/50 border border-red-700 rounded text-red-200 text-sm">
+                  {uploadError}
+                </div>
+              )}
+
               <input
                 type="text"
-                placeholder="Titolo video"
+                placeholder="Titolo video *"
                 value={videoForm.title}
                 onChange={(e) => setVideoForm({ ...videoForm, title: e.target.value })}
                 className="w-full px-3 py-2 bg-gray-800 text-white rounded"
@@ -479,48 +554,131 @@ export default function DesignerManagement() {
                 rows={2}
                 className="w-full px-3 py-2 bg-gray-800 text-white rounded"
               />
-              <input
-                type="text"
-                placeholder="URL thumbnail"
-                value={videoForm.thumbnail_url}
-                onChange={(e) => setVideoForm({ ...videoForm, thumbnail_url: e.target.value })}
-                className="w-full px-3 py-2 bg-gray-800 text-white rounded"
-              />
-              <input
-                type="text"
-                placeholder="URL video"
-                value={videoForm.video_url}
-                onChange={(e) => setVideoForm({ ...videoForm, video_url: e.target.value })}
-                className="w-full px-3 py-2 bg-gray-800 text-white rounded"
-              />
-              <input
-                type="text"
-                placeholder="Durata (es: 45:30)"
-                value={videoForm.duration}
-                onChange={(e) => setVideoForm({ ...videoForm, duration: e.target.value })}
-                className="w-full px-3 py-2 bg-gray-800 text-white rounded"
-              />
-              <input
-                type="number"
-                placeholder="Anno"
-                value={videoForm.year}
-                onChange={(e) => setVideoForm({ ...videoForm, year: parseInt(e.target.value) })}
-                className="w-full px-3 py-2 bg-gray-800 text-white rounded"
-              />
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  File Video * (Max 2GB)
+                </label>
+                <input
+                  type="file"
+                  accept="video/*"
+                  onChange={handleVideoFileChange}
+                  className="hidden"
+                  id="designer-video-upload"
+                  disabled={uploading}
+                />
+                <label
+                  htmlFor="designer-video-upload"
+                  className="flex items-center justify-center gap-2 w-full px-3 py-2 border-2 border-dashed border-gray-600 rounded cursor-pointer hover:border-blue-500 transition-colors"
+                >
+                  <Upload size={18} className="text-gray-400" />
+                  <span className="text-sm text-gray-300">
+                    {videoFile ? videoFile.name : 'Carica video'}
+                  </span>
+                </label>
+                {videoFile && (
+                  <div className="mt-2 flex items-center justify-between text-sm text-gray-400">
+                    <span>
+                      {videoFile.size > 1024 * 1024 * 1024
+                        ? `${(videoFile.size / (1024 * 1024 * 1024)).toFixed(2)} GB`
+                        : `${(videoFile.size / (1024 * 1024)).toFixed(2)} MB`
+                      }
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setVideoFile(null)}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Thumbnail * (Max 10MB)
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleThumbnailFileChange}
+                  className="hidden"
+                  id="designer-thumbnail-upload"
+                  disabled={uploading}
+                />
+                <label
+                  htmlFor="designer-thumbnail-upload"
+                  className="flex items-center justify-center gap-2 w-full px-3 py-2 border-2 border-dashed border-gray-600 rounded cursor-pointer hover:border-blue-500 transition-colors"
+                >
+                  <Upload size={18} className="text-gray-400" />
+                  <span className="text-sm text-gray-300">
+                    {thumbnailFile ? thumbnailFile.name : 'Carica thumbnail'}
+                  </span>
+                </label>
+                {thumbnailFile && (
+                  <div className="mt-2">
+                    <img
+                      src={URL.createObjectURL(thumbnailFile)}
+                      alt="Preview"
+                      className="w-full h-32 object-cover rounded"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setThumbnailFile(null)}
+                      className="mt-2 text-sm text-red-400 hover:text-red-300"
+                    >
+                      Rimuovi
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="text"
+                  placeholder="Durata (es: 45:30)"
+                  value={videoForm.duration}
+                  onChange={(e) => setVideoForm({ ...videoForm, duration: e.target.value })}
+                  className="w-full px-3 py-2 bg-gray-800 text-white rounded"
+                />
+                <input
+                  type="number"
+                  placeholder="Anno"
+                  value={videoForm.year}
+                  onChange={(e) => setVideoForm({ ...videoForm, year: parseInt(e.target.value) })}
+                  className="w-full px-3 py-2 bg-gray-800 text-white rounded"
+                />
+              </div>
+
               <div className="flex gap-2">
                 <button
                   onClick={handleAddVideo}
-                  className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700"
+                  disabled={uploading}
+                  className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  <Save size={18} className="inline mr-2" />
-                  Salva
+                  {uploading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Caricamento...
+                    </>
+                  ) : (
+                    <>
+                      <Save size={18} />
+                      Salva
+                    </>
+                  )}
                 </button>
                 <button
                   onClick={() => {
                     setIsAddingVideo(false);
                     resetVideoForm();
+                    setVideoFile(null);
+                    setThumbnailFile(null);
+                    setUploadError('');
                   }}
-                  className="flex-1 bg-gray-700 text-white py-2 rounded hover:bg-gray-600"
+                  disabled={uploading}
+                  className="flex-1 bg-gray-700 text-white py-2 rounded hover:bg-gray-600 disabled:opacity-50"
                 >
                   Annulla
                 </button>
