@@ -256,15 +256,6 @@ export default function HomePage() {
           />
         )}
 
-        {!activeCategory && trendingVideos.length > 0 && (
-          <VideoRow
-            title="On Top"
-            videos={trendingVideos}
-            onVideoClick={setSelectedVideo}
-            onInfoClick={setSelectedVideoForDetails}
-          />
-        )}
-
         {!activeCategory && fashionWeekHighlights.length > 0 && (
           <VideoRow
             title="Fashion Week"
@@ -296,33 +287,6 @@ export default function HomePage() {
           <VideoRow
             title="Because You Watched"
             videos={becauseYouWatchedVideos}
-            onVideoClick={setSelectedVideo}
-            onInfoClick={setSelectedVideoForDetails}
-          />
-        )}
-
-        {!activeCategory && popularInCountryVideos.length > 0 && (
-          <VideoRow
-            title="Popular in Your Country"
-            videos={popularInCountryVideos}
-            onVideoClick={setSelectedVideo}
-            onInfoClick={setSelectedVideoForDetails}
-          />
-        )}
-
-        {!activeCategory && designerSpotlight.length > 0 && (
-          <VideoRow
-            title="Designer Spotlight"
-            videos={designerSpotlight}
-            onVideoClick={setSelectedVideo}
-            onInfoClick={setSelectedVideoForDetails}
-          />
-        )}
-
-        {!activeCategory && todaysFeaturedShow.length > 0 && (
-          <VideoRow
-            title="Today's Featured Show"
-            videos={todaysFeaturedShow}
             onVideoClick={setSelectedVideo}
             onInfoClick={setSelectedVideoForDetails}
           />
