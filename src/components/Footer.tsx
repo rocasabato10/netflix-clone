@@ -12,7 +12,7 @@ export default function Footer() {
             <img
               src="/logo-modaflix.jpeg"
               alt="ModaFlicks"
-              className="h-20 w-auto mb-4"
+              className="w-auto h-auto mb-4"
             />
             <p className="text-gray-400 text-sm leading-relaxed">
               La tua destinazione premium per contenuti esclusivi di moda, sfilate e tendenze dal mondo della haute couture.
