@@ -15,12 +15,14 @@ interface SubscriptionPlansProps {
   onSelectPlan: (planSlug: string) => void;
   selectedPlan?: string;
   showTitle?: boolean;
+  disabled?: boolean;
 }
 
 export const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({
   onSelectPlan,
   selectedPlan,
-  showTitle = true
+  showTitle = true,
+  disabled = false
 }) => {
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -70,7 +72,9 @@ export const SubscriptionPlans: React.FC<SubscriptionPlansProps> = ({
             key={plan.id}
             onClick={() => onSelectPlan(plan.slug)}
             className={`relative border-2 rounded-lg p-6 cursor-pointer transition-all ${
-              selectedPlan === plan.slug
+              disabled
+                ? 'border-gray-300 bg-white hover:border-blue-400 hover:shadow-md'
+                : selectedPlan === plan.slug
                 ? 'border-blue-600 bg-blue-50 shadow-lg'
                 : 'border-gray-300 bg-white hover:border-blue-400 hover:shadow-md'
             }`}

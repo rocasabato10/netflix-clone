@@ -467,8 +467,9 @@ export default function HomePage() {
             ) : (
               <div>
                 <SubscriptionPlans
-                  onSelectPlan={() => setAuthModalOpen(true)}
+                  onSelectPlan={(planSlug) => setAuthModalOpen(true)}
                   showTitle={false}
+                  disabled={true}
                 />
                 <p className="text-center text-gray-300 mt-6">
                   <button
