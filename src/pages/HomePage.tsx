@@ -418,6 +418,19 @@ export default function HomePage() {
             );
           }
 
+          if (subcategory.slug === 'designers') {
+            return (
+              <div key={subcategory.id} id={`subcategory-${subcategory.id}`}>
+                <DesignerRow
+                  title={subcategory.name}
+                  designers={designers}
+                  onDesignerClick={setSelectedDesigner}
+                  onViewAll={() => {}}
+                />
+              </div>
+            );
+          }
+
           const subcategoryVideos = getVideosBySubcategory(subcategory.id);
           return (
             <div key={subcategory.id} id={`subcategory-${subcategory.id}`}>
