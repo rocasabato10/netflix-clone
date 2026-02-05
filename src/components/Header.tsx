@@ -101,16 +101,11 @@ export default function Header({
               }}
               className="hover:opacity-80 transition"
             >
-              <div className="font-bold text-2xl sm:text-3xl tracking-wider" style={{
-                background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                textShadow: '0 2px 10px rgba(255, 215, 0, 0.3)',
-                fontFamily: 'serif'
-              }}>
-                MODAFLICKS
-              </div>
+              <img
+                src="/logo-modaflicks.jpeg"
+                alt="ModaFlicks"
+                className="h-8 sm:h-10 w-auto object-contain"
+              />
             </button>
 
             <nav className="hidden lg:flex gap-6">
