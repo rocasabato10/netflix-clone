@@ -104,7 +104,7 @@ export default function Header({
               <img
                 src="/logo-modaflicks.jpeg"
                 alt="ModaFlicks"
-                className="h-12 sm:h-16 w-auto object-contain"
+                className="h-16 sm:h-20 w-auto object-contain"
               />
             </button>
 
