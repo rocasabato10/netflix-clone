@@ -102,7 +102,7 @@ export default function Header({
               className="hover:opacity-80 transition"
             >
               <img
-                src="/logo-modaflicks.jpeg"
+                src="/logo-modaflix.jpeg"
                 alt="ModaFlicks"
                 className="h-20 sm:h-24 lg:h-28 w-auto object-contain"
               />
