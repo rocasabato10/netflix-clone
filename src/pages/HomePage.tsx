@@ -8,6 +8,7 @@ import KeepWatchingRow from '../components/KeepWatchingRow';
 import VideoModal from '../components/VideoModal';
 import VideoDetails from '../components/VideoDetails';
 import { SubscriptionPlans } from '../components/SubscriptionPlans';
+import { AuthModal } from '../components/AuthModal';
 import Footer from '../components/Footer';
 import DesignerGrid from '../components/DesignerGrid';
 import DesignerRow from '../components/DesignerRow';
@@ -50,6 +51,7 @@ export default function HomePage() {
   const [watchHistory, setWatchHistory] = useState<WatchHistoryVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [userSubscription, setUserSubscription] = useState<string>('free');
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -465,11 +467,14 @@ export default function HomePage() {
             ) : (
               <div>
                 <SubscriptionPlans
-                  onSelectPlan={() => {}}
+                  onSelectPlan={() => setAuthModalOpen(true)}
                   showTitle={false}
                 />
                 <p className="text-center text-gray-300 mt-6">
-                  <button className="text-blue-400 hover:text-blue-300 font-medium">
+                  <button
+                    onClick={() => setAuthModalOpen(true)}
+                    className="text-blue-400 hover:text-blue-300 font-medium"
+                  >
                     Accedi per sottoscrivere un abbonamento
                   </button>
                 </p>
@@ -526,6 +531,12 @@ export default function HomePage() {
           }}
         />
       )}
+
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        initialMode="register"
+      />
 
       <Footer />
     </div>
