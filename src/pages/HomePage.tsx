@@ -10,7 +10,6 @@ import VideoDetails from '../components/VideoDetails';
 import { SubscriptionPlans } from '../components/SubscriptionPlans';
 import { AuthModal } from '../components/AuthModal';
 import Footer from '../components/Footer';
-import DesignerGrid from '../components/DesignerGrid';
 import DesignerRow from '../components/DesignerRow';
 import DesignerVideoView from '../components/DesignerVideoView';
 import CollectionRow, { Collection } from '../components/CollectionRow';
@@ -390,14 +389,6 @@ export default function HomePage() {
                   onVideoClick={setSelectedVideo}
                   onInfoClick={setSelectedVideoForDetails}
                 />
-              </div>
-            );
-          }
-
-          if (subcategory.slug === 'designers') {
-            return (
-              <div key={subcategory.id} id={`subcategory-${subcategory.id}`}>
-                <DesignerGrid />
               </div>
             );
           }
