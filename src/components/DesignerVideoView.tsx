@@ -17,8 +17,6 @@ export default function DesignerVideoView({
   onVideoInfo,
 }: DesignerVideoViewProps) {
   const [videos, setVideos] = useState<Video[]>([]);
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
-  const [availableYears, setAvailableYears] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -59,12 +57,6 @@ export default function DesignerVideoView({
         });
 
         setVideos(mappedVideos);
-
-        const years = [...new Set(mappedVideos.map((v) => v.year))].sort((a, b) => b - a);
-        setAvailableYears(years);
-        if (years.length > 0 && !selectedYear) {
-          setSelectedYear(years[0]);
-        }
       }
     } catch (error) {
       console.error('Error fetching designer videos:', error);
@@ -72,10 +64,6 @@ export default function DesignerVideoView({
       setLoading(false);
     }
   };
-
-  const filteredVideos = selectedYear
-    ? videos.filter((v) => v.year === selectedYear)
-    : videos;
 
   return (
     <div className="fixed inset-0 bg-black z-50 overflow-y-auto">
@@ -119,19 +107,20 @@ export default function DesignerVideoView({
             </div>
           </div>
 
-          <div className="flex gap-8">
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-white mb-6">Collections</h2>
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-6">
+              Related videos {videos.length > 0 && `(${videos.length})`}
+            </h2>
 
-              {loading ? (
-                <div className="text-white text-center py-12">Caricamento...</div>
-              ) : filteredVideos.length === 0 ? (
-                <div className="text-gray-400 text-center py-12">
-                  Nessun video disponibile per questo designer
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredVideos.map((video) => (
+            {loading ? (
+              <div className="text-white text-center py-12">Caricamento...</div>
+            ) : videos.length === 0 ? (
+              <div className="text-gray-400 text-center py-12">
+                Nessun video disponibile per questo designer
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {videos.map((video) => (
                     <div
                       key={video.id}
                       className="group relative bg-neutral-900 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl"
@@ -176,26 +165,6 @@ export default function DesignerVideoView({
                   ))}
                 </div>
               )}
-            </div>
-
-            <div className="w-48 flex-shrink-0">
-              <h3 className="text-xl font-bold text-white mb-4">Years</h3>
-              <div className="space-y-2">
-                {availableYears.map((year) => (
-                  <button
-                    key={year}
-                    onClick={() => setSelectedYear(year)}
-                    className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 ${
-                      selectedYear === year
-                        ? 'bg-amber-600 text-white font-semibold'
-                        : 'bg-neutral-900 text-gray-300 hover:bg-neutral-800'
-                    }`}
-                  >
-                    {year}
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </div>
